@@ -10,6 +10,7 @@ let posledniFiltry = {
 document.addEventListener("DOMContentLoaded", async () => {
   await nactiData();
   naplnTypyHerDropdown();
+  nastavFiltraci();
   obnovZobrazeni();
 });
 
@@ -36,6 +37,82 @@ function naplnTypyHerDropdown() {
     option.textContent = typ.charAt(0).toUpperCase() + typ.slice(1);
     selectTyp.appendChild(option);
   });
+}
+
+function nastavFiltraci() {
+  const formular = document.getElementById("filtr-form");
+  if (!formular) return;
+
+  formular.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    posledniFiltry.typ = document.getElementById("filtr-typ").value;
+    posledniFiltry.hraciMin = parseInt(document.getElementById("filtr-hraci-min").value);
+    posledniFiltry.hraciMax = parseInt(document.getElementById("filtr-hraci-max").value);
+    posledniFiltry.casMax = parseInt(document.getElementById("filtr-cas-max").value);
+
+    if (!isNaN(posledniFiltry.hraciMin) && !isNaN(posledniFiltry.hraciMax) && posledniFiltry.hraciMin > posledniFiltry.hraciMax) {
+      alert("Minimální počet hráčů nemůže být větší než maximální.");
+      return;
+    }
+
+    obnovZobrazeni();
+  });
+}
+
+function filtrujHry() {
+  let filtrovane = [...hry];
+
+  if (posledniFiltry.typ && posledniFiltry.typ !== "vse") {
+    filtrovane = filtrovane.filter(hra => hra.typ === posledniFiltry.typ);
+  }
+  if (!isNaN(posledniFiltry.hraciMin)) {
+    filtrovane = filtrovane.filter(hra => hra.hraci_max >= posledniFiltry.hraciMin);
+  }
+  if (!isNaN(posledniFiltry.hraciMax)) {
+    filtrovane = filtrovane.filter(hra => hra.hraci_min <= posledniFiltry.hraciMax);
+  }
+  if (!isNaN(posledniFiltry.casMax)) {
+    filtrovane = filtrovane.filter(hra => hra.cas_max <= posledniFiltry.casMax);
+  }
+
+  return filtrovane;
+}
+
+function getTop3HryOnce(hryData) {
+  const kopie = [...hryData];
+  const top3 = [];
+
+  if (kopie.length === 0) return top3;
+
+  kopie.sort((a, b) => b.libi - a.libi);
+  const topLibi = kopie.shift();
+  top3.push(topLibi);
+
+  kopie.sort((a, b) => b.zahrano - a.zahrano);
+  const topZahrano = kopie.find(h => h.nazev !== topLibi.nazev);
+  if (topZahrano) {
+    kopie.splice(kopie.indexOf(topZahrano), 1);
+    top3.push(topZahrano);
+  }
+
+  if (kopie.length > 0) {
+    const nahodna = kopie[Math.floor(Math.random() * kopie.length)];
+    top3.push(nahodna);
+  }
+
+  return top3;
+}
+
+function getHraIndex(hra) {
+  return hry.findIndex(h => h.nazev === hra.nazev);
+}
+
+function obnovZobrazeni() {
+  const filtrovane = filtrujHry();
+  const top3 = getTop3HryOnce(filtrovane);
+  zobrazTop3(top3);
+  zobrazHryBezTop3(filtrovane, top3);
 }
 
 function zobrazTop3(top3) {
@@ -86,85 +163,6 @@ function zobrazHryBezTop3(hryData, top3) {
     `;
     seznam.appendChild(hraDiv);
   });
-}
-
-function getTop3HryOnce(hryData) {
-  const kopie = [...hryData];
-  const top3 = [];
-
-  if (kopie.length === 0) return top3;
-
-  // Nejvíce líbí
-  kopie.sort((a, b) => b.libi - a.libi);
-  const topLibi = kopie.shift();
-  top3.push(topLibi);
-
-  // Nejvíce zahrané (ale jiná hra)
-  kopie.sort((a, b) => b.zahrano - a.zahrano);
-  const topZahrano = kopie.find(h => h.nazev !== topLibi.nazev);
-  if (topZahrano) {
-    kopie.splice(kopie.indexOf(topZahrano), 1);
-    top3.push(topZahrano);
-  }
-
-  // Náhodná zbylá (odlišná od předchozích)
-  if (kopie.length > 0) {
-    const nahodna = kopie[Math.floor(Math.random() * kopie.length)];
-    top3.push(nahodna);
-  }
-
-  return top3;
-}
-
-function getHraIndex(hra) {
-  return hry.findIndex(h => h.nazev === hra.nazev);
-}
-
-function nastavFiltraci() {
-  const formular = document.getElementById("filtr-form");
-  if (!formular) return;
-
-  formular.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    posledniFiltry.typ = document.getElementById("filtr-typ").value;
-    posledniFiltry.hraciMin = parseInt(document.getElementById("filtr-hraci-min").value);
-    posledniFiltry.hraciMax = parseInt(document.getElementById("filtr-hraci-max").value);
-    posledniFiltry.casMax = parseInt(document.getElementById("filtr-cas-max").value);
-
-    if (!isNaN(posledniFiltry.hraciMin) && !isNaN(posledniFiltry.hraciMax) && posledniFiltry.hraciMin > posledniFiltry.hraciMax) {
-      alert("Minimální počet hráčů nemůže být větší než maximální.");
-      return;
-    }
-
-    obnovZobrazeni();
-  });
-}
-
-function filtrujHry() {
-  let filtrovane = [...hry];
-
-  if (posledniFiltry.typ && posledniFiltry.typ !== "vse") {
-    filtrovane = filtrovane.filter(hra => hra.typ === posledniFiltry.typ);
-  }
-  if (!isNaN(posledniFiltry.hraciMin)) {
-    filtrovane = filtrovane.filter(hra => hra.hraci_max >= posledniFiltry.hraciMin);
-  }
-  if (!isNaN(posledniFiltry.hraciMax)) {
-    filtrovane = filtrovane.filter(hra => hra.hraci_min <= posledniFiltry.hraciMax);
-  }
-  if (!isNaN(posledniFiltry.casMax)) {
-    filtrovane = filtrovane.filter(hra => hra.cas_max <= posledniFiltry.casMax);
-  }
-
-  return filtrovane;
-}
-
-function obnovZobrazeni() {
-  const filtrovane = filtrujHry();
-  const top3 = getTop3HryOnce(filtrovane);
-  zobrazTop3(top3);
-  zobrazHryBezTop3(filtrovane, top3);
 }
 
 async function oznacLibi(index) {
