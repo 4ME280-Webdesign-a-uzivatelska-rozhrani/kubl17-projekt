@@ -45,8 +45,9 @@ function zobrazHryBezTop3(hryData) {
   if (!seznam) return;
   seznam.innerHTML = "";
 
-  const top3Hry = getTop3Hry(hryData);
-  const hryKZobrazeni = hryData.filter(hra => !top3Hry.some(th => th.nazev === hra.nazev));
+  const top3Hry = getTop3Hry(hryData); // getTop3Hry bere hryData (tedy filtrované)
+  // vyjmeme hry z top3 ze seznamu
+  const hryKZobrazeni = hryData.filter(hra => !top3Hry.some(topHra => topHra.nazev === hra.nazev));
 
   hryKZobrazeni.forEach((hra) => {
     const hraDiv = document.createElement("div");
