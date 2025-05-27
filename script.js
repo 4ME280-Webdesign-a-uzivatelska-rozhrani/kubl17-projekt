@@ -26,7 +26,6 @@ function naplnTypyHerDropdown() {
   const typy = [...new Set(hry.map(hra => hra.typ))].sort();
 
   selectTyp.innerHTML = '<option value="vse">Vše</option>';
-
   typy.forEach(typ => {
     const option = document.createElement("option");
     option.value = typ;
@@ -64,20 +63,17 @@ function zobrazTop3(hryData) {
   if (!top3Container) return;
   top3Container.innerHTML = "";
 
-  // 1. Nejčastěji označená jako oblíbená
-  const topLibi = [...hryData].sort((a,b) => b.libi - a.libi)[0];
+  if (hryData.length < 1) return;
 
-  // 2. Nejmeně zahraná (nejnižší zahrano)
-  const topZahrano = [...hryData].sort((a,b) => a.zahrano - b.zahrano)[0];
-
-  // 3. Náhodná
+  const topLibi = [...hryData].sort((a, b) => b.libi - a.libi)[0];
+  const topZahrano = [...hryData].sort((a, b) => a.zahrano - b.zahrano)[0];
   const nahodna = hryData[Math.floor(Math.random() * hryData.length)];
 
   const vytvorTopHru = (hra, label) => {
     const div = document.createElement("div");
-    div.className = "top-hra";
+    div.className = "hra top-hra";
     div.innerHTML = `
-      <h3>${hra.nazev} <span class="top-label">${label}</span></h3>
+      <h3>${hra.nazev} <span class="top-label">– ${label}</span></h3>
       <p>Typ: ${hra.typ}</p>
       <p>Počet hráčů: ${hra.hraci_min}–${hra.hraci_max}</p>
       <p>Čas: ${hra.cas_min}–${hra.cas_max} min</p>
@@ -102,6 +98,11 @@ function nastavFiltraci() {
     const hraciMin = parseInt(document.getElementById("filtr-hraci-min").value);
     const hraciMax = parseInt(document.getElementById("filtr-hraci-max").value);
     const casMax = parseInt(document.getElementById("filtr-cas-max").value);
+
+    if (!isNaN(hraciMin) && !isNaN(hraciMax) && hraciMin > hraciMax) {
+      alert("Minimální počet hráčů nemůže být větší než maximální.");
+      return;
+    }
 
     let filtrovane = [...hry];
 
