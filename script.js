@@ -1,4 +1,5 @@
-const API_URL = "https://kubl17-projekt.kubl17.workers.dev";
+const BIN_ID = "683562cb8561e97a501c0025";
+const API_URL = `https://kubl17-projekt.kubl17.workers.dev/b/${BIN_ID}`;
 let hry = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
