@@ -11,163 +11,142 @@
     }
 
     body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f9f9f9;
-      color: #222;
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      padding: 20px;
       margin: 0;
-      padding: 10px;
-      line-height: 1.5;
-    }
-
-    #app {
-      max-width: 600px;
-      margin: 0 auto;
-      background: white;
-      padding: 15px 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 12px rgba(0,0,0,0.1);
     }
 
     h1, h2 {
-      color: #2c3e50;
-      margin-bottom: 10px;
+      text-align: center;
     }
 
-    form#filtr-form {
+    #filtr-form {
+      max-width: 600px;
+      margin: 0 auto 20px auto;
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-bottom: 20px;
-      align-items: center;
+      justify-content: center;
     }
 
-    form#filtr-form select,
-    form#filtr-form input[type=number],
-    form#filtr-form button {
-      padding: 6px 8px;
+    #filtr-form select,
+    #filtr-form input,
+    #filtr-form button {
+      padding: 8px;
+      border-radius: 5px;
       border: 1px solid #ccc;
-      border-radius: 4px;
-      flex: 1 1 120px;
+      font-size: 1em;
     }
 
-    form#filtr-form button {
-      background-color: #2980b9;
+    #filtr-form button {
+      background-color: #3498db;
       color: white;
+      border: none;
       cursor: pointer;
-      font-weight: 600;
     }
 
-    form#filtr-form button:hover {
-      background-color: #1f5a86;
+    #filtr-form button:hover {
+      background-color: #2980b9;
     }
 
     .hra, .top-hra {
-      border-radius: 6px;
-      padding: 12px 15px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      margin-bottom: 15px;
+      max-width: 600px;
+      margin: 10px auto;
+      padding: 12px 16px;
+      border-radius: 8px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
 
     .top-hra.gold {
-      background: #fff9d6;
+      background-color: #fff7d6;
       border-left: 6px solid #f1c40f;
     }
 
     .top-hra.green {
-      background: #e6fce6;
-      border-left: 6px solid #2ecc71;
+      background-color: #e5fbe5;
+      border-left: 6px solid #27ae60;
     }
 
     .top-hra.purple {
-      background: #f5eaff;
+      background-color: #f2e5ff;
       border-left: 6px solid #9b59b6;
-    }
-
-    .hra {
-      background: #eef5fb;
     }
 
     .hra h3, .top-hra h3 {
       margin: 0 0 6px 0;
-      font-weight: 700;
-      color: #34495e;
+      font-size: 1.2em;
     }
 
     .info-row {
       font-size: 0.95em;
       color: #555;
-      margin-bottom: 8px;
       display: flex;
       gap: 15px;
+      margin-bottom: 8px;
       flex-wrap: wrap;
     }
 
-    .hra button, .top-hra button {
-      background-color: #2980b9;
-      border: none;
-      color: white;
-      padding: 6px 10px;
+    .reaction-row {
+      margin-bottom: 8px;
+    }
+
+    button {
       margin-right: 6px;
-      border-radius: 5px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
       cursor: pointer;
-      font-weight: 600;
-      font-size: 0.9em;
-      transition: background-color 0.25s ease;
-      user-select: none;
     }
 
-    .hra button:hover, .top-hra button:hover {
-      background-color: #1f5a86;
+    button:hover {
+      background-color: #2980b9;
     }
 
-    @media (max-width: 480px) {
-      form#filtr-form {
+    @media (max-width: 600px) {
+      #filtr-form {
         flex-direction: column;
-      }
-
-      form#filtr-form select,
-      form#filtr-form input,
-      form#filtr-form button {
-        flex: 1 1 100%;
-      }
-
-      .hra button, .top-hra button {
-        width: 100%;
-        margin-bottom: 6px;
+        align-items: stretch;
       }
 
       .info-row {
         flex-direction: column;
-        gap: 4px;
+        gap: 5px;
+      }
+
+      .hra button,
+      .top-hra button {
+        display: block;
+        width: 100%;
+        margin-bottom: 5px;
       }
     }
   </style>
 </head>
 <body>
 
-  <div id="app">
-    <h1>Seznam domácích her</h1>
+  <h1>Seznam domácích her</h1>
 
-    <form id="filtr-form">
-      <select id="filtr-typ">
-        <option value="">Všechny typy</option>
-      </select>
-      <input type="number" id="filtr-hraci-min" placeholder="Min hráčů">
-      <input type="number" id="filtr-hraci-max" placeholder="Max hráčů">
-      <input type="number" id="filtr-cas-max" placeholder="Max minut">
-      <button type="submit">Filtrovat</button>
-    </form>
+  <form id="filtr-form">
+    <select id="filtr-typ">
+      <option value="">Všechny typy</option>
+    </select>
+    <input type="number" id="filtr-hraci-min" placeholder="Min hráčů">
+    <input type="number" id="filtr-hraci-max" placeholder="Max hráčů">
+    <input type="number" id="filtr-cas-max" placeholder="Max minut">
+    <button type="submit">Filtrovat</button>
+  </form>
 
-    <section id="top3">
-      <h2>Top 3 hry</h2>
-      <!-- Top 3 hry se zde dynamicky zobrazí -->
-    </section>
+  <section id="top3">
+    <!-- Zde se zobrazí top 3 hry (zlatá, zelená, fialová) -->
+  </section>
 
-    <section id="seznam-her">
-      <h2>Všechny ostatní hry</h2>
-      <!-- Zbytek her -->
-    </section>
-  </div>
+  <section id="seznam-her">
+    <!-- Zbytek her -->
+  </section>
 
   <script src="script.js"></script>
 
