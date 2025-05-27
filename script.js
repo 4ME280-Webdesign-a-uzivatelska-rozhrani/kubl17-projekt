@@ -1,4 +1,4 @@
-const API_URL = "https://kubl17-projekt.kubl17.workers.dev";
+const API_URL = "https://kubl17-projekt.kubl17.workers.dev/";
 let hry = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -9,13 +9,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function nactiData() {
   try {
-    const response = await fetch(API_URL);
-    const data = await response.json();
+    const res = await fetch(API_URL);
+    const data = await res.json();
     hry = data.record.hry;
+    zobrazHry(hry);
+    zobrazTop3(hry);
   } catch (error) {
     console.error("Chyba při načítání dat:", error);
   }
 }
+
 
 function zobrazHry(hryData) {
   const seznam = document.getElementById("seznam-her");
@@ -91,20 +94,14 @@ function oznacZahrano(index) {
 
 async function ulozData() {
   try {
-    const response = await fetch(API_URL, {
+    await fetch(API_URL, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        record: { hry }
-      })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ hry })
     });
-
-    if (!response.ok) {
-      console.error("Chyba při ukládání:", await response.text());
-    }
-  } catch (err) {
-    console.error("Chyba při PUT požadavku:", err);
+  } catch (error) {
+    console.error("Chyba při ukládání dat:", error);
   }
+}
+
 }
