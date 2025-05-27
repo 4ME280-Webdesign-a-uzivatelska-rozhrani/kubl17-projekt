@@ -75,29 +75,23 @@
       background-color: #1f5a86;
     }
 
-    #seznam-her {
+    #top3 {
       display: flex;
       flex-direction: column;
       gap: 15px;
+      margin-bottom: 30px;
     }
 
-    .hra, .top-hra {
-      background: #eaf1f8;
+    .top-hra {
       border-radius: 6px;
       padding: 12px 15px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      user-select: none;
-    }
-
-    .hra h3, .top-hra h3 {
-      margin: 0 0 8px 0;
-      font-weight: 700;
-      color: #34495e;
+      color: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .top-label {
       font-size: 0.9em;
-      background-color: #3498db;
+      background-color: rgba(255, 255, 255, 0.2);
       color: white;
       padding: 3px 8px;
       border-radius: 12px;
@@ -105,13 +99,65 @@
       font-weight: 600;
     }
 
-    .hra p, .top-hra p {
+    .top-favorit {
+      background-color: #f1c40f; /* zlatá */
+    }
+
+    .top-zahrano {
+      background-color: #3498db; /* modrá */
+    }
+
+    .top-nahodna {
+      background-color: #9b59b6; /* fialová */
+    }
+
+    .top-hra h3 {
+      margin: 0 0 8px 0;
+      color: white;
+    }
+
+    .top-hra p {
+      margin: 4px 0;
+      font-size: 0.95em;
+      color: white;
+    }
+
+    #seznam-her {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .hra {
+      background: #eaf1f8;
+      border-radius: 6px;
+      padding: 12px 15px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      user-select: none;
+    }
+
+    .hra h3 {
+      margin: 0 0 8px 0;
+      font-weight: 700;
+      color: #34495e;
+    }
+
+    .info-radek {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 0.95em;
+      color: #555;
+      margin-bottom: 5px;
+    }
+
+    .hra p {
       margin: 4px 0;
       font-size: 0.95em;
       color: #555;
     }
 
-    .hra button, .top-hra button {
+    .hra button {
       background-color: #2980b9;
       border: none;
       color: white;
@@ -125,7 +171,7 @@
       user-select: none;
     }
 
-    .hra button:hover, .top-hra button:hover {
+    .hra button:hover {
       background-color: #1f5a86;
     }
 
@@ -141,9 +187,13 @@
         flex: 1 1 100%;
       }
 
-      .hra button, .top-hra button {
+      .hra button {
         margin-bottom: 6px;
         width: 100%;
+      }
+
+      .info-radek {
+        flex-direction: column;
       }
     }
   </style>
@@ -171,16 +221,15 @@
 
     <section id="top3">
       <h2>Top 3 hry</h2>
-      <!-- top 3 se sem doplní dynamicky -->
+      <!-- Top 3 budou doplněny dynamicky -->
     </section>
 
     <section id="seznam-her">
       <h2>Seznam her</h2>
-      <!-- zbytek her se sem doplní dynamicky -->
+      <!-- Seznam bude doplněn dynamicky -->
     </section>
   </div>
 
   <script src="script.js"></script>
-
 </body>
 </html>
