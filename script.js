@@ -63,24 +63,32 @@ function zobrazTop3(hryData) {
   if (!top3Container) return;
   top3Container.innerHTML = "";
 
-  if (hryData.length === 0) return;
+  const kopie = [...hryData];
 
-  const topLibi = [...hryData].sort((a, b) => b.libi - a.libi)[0];
-  const topZahrano = [...hryData].sort((a, b) => a.zahrano - b.zahrano)[0];
+  // 1. Nejvíce líbí
+  const topLibi = kopie.sort((a, b) => b.libi - a.libi).find(h => true);
+  const zbyle1 = kopie.filter(h => h.nazev !== topLibi?.nazev);
 
-  let nahodna;
-  const zbyvajici = hryData.filter(hra => hra !== topLibi && hra !== topZahrano);
-  if (zbyvajici.length > 0) {
-    nahodna = zbyvajici[Math.floor(Math.random() * zbyvajici.length)];
-  } else {
-    nahodna = topLibi;
-  }
+  // 2. Nejmeně zahrané
+  const topZahrano = zbyle1.sort((a, b) => a.zahrano - b.zahrano).find(h => true);
+  const zbyle2 = zbyle1.filter(h => h.nazev !== topZahrano?.nazev);
 
-  const top3 = [topLibi, topZahrano, nahodna];
+  // 3. Náhodná jiná
+  const nahodna = zbyle2.length > 0
+    ? zbyle2[Math.floor(Math.random() * zbyle2.length)]
+    : null;
+
+  const top3 = [topLibi, topZahrano, nahodna].filter(Boolean);
   const topLabels = ["TOP favorit", "Zahraj si mě prosím", "Náhodná výzva"];
+
+  window._top3Nazvy = [];
 
   top3.forEach((hra, i) => {
     const index = hry.findIndex(h => h.nazev === hra.nazev);
+    if (index === -1) return;
+
+    window._top3Nazvy.push(hra.nazev);
+
     const div = document.createElement("div");
     div.className = "top-hra";
     div.innerHTML = `
@@ -95,9 +103,6 @@ function zobrazTop3(hryData) {
     `;
     top3Container.appendChild(div);
   });
-
-  // Uložit top3 ID pro pozdější skrytí ze seznamu
-  window._top3Nazvy = top3.map(h => h.nazev);
 }
 
 function zobrazHryBezTop3(hryData) {
@@ -117,22 +122,10 @@ function nastavFiltraci() {
     const hraciMax = parseInt(document.getElementById("filtr-hraci-max").value);
     const casMax = parseInt(document.getElementById("filtr-cas-max").value);
 
-    if (!isNaN(hraciMin) && hraciMin <= 0) {
-      alert("Minimální počet hráčů musí být větší než 0.");
-      return;
-    }
-    if (!isNaN(hraciMax) && hraciMax <= 0) {
-      alert("Maximální počet hráčů musí být větší než 0.");
-      return;
-    }
     if (!isNaN(hraciMin) && !isNaN(hraciMax) && hraciMin > hraciMax) {
       alert("Minimální počet hráčů nemůže být větší než maximální.");
       zobrazHry([]);
       zobrazTop3([]);
-      return;
-    }
-    if (!isNaN(casMax) && casMax <= 0) {
-      alert("Čas musí být větší než 0 minut.");
       return;
     }
 
