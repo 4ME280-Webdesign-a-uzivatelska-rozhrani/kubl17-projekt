@@ -47,8 +47,8 @@ function zobrazHry(hryData) {
     hraDiv.innerHTML = `
       <h3>${hra.nazev}</h3>
       <p>Typ: ${hra.typ}</p>
-      <p>Počet hráčů: ${hra.hraci}</p>
-      <p>Čas: ${hra.cas} min</p>
+     <p>Počet hráčů: ${hra.hraci_min}–${hra.hraci_max}</p>
+<p>Čas: ${hra.cas_min}–${hra.cas_max} min</p>
       <p>👍 ${hra.libi} | 👎 ${hra.nelibi} | ✅ ${hra.zahrano}</p>
       <button onclick="oznacLibi(${index})">👍 Líbí</button>
       <button onclick="oznacNelibi(${index})">👎 Nelíbí</button>
@@ -71,8 +71,13 @@ function nastavFiltraci() {
     let filtrovane = [...hry];
 
     if (typ) filtrovane = filtrovane.filter(hra => hra.typ === typ);
-    if (!isNaN(hraci)) filtrovane = filtrovane.filter(hra => hra.hraci === hraci);
-    if (!isNaN(cas)) filtrovane = filtrovane.filter(hra => hra.cas <= cas);
+   if (!isNaN(hraci)) {
+  filtrovane = filtrovane.filter(hra => hraci >= hra.hraci_min && hraci <= hra.hraci_max);
+}
+if (!isNaN(cas)) {
+  filtrovane = filtrovane.filter(hra => hra.cas_min <= cas);
+}
+
 
     // doporučení: nejvíce líbí → nejméně zahrané → náhodná
     filtrovane.sort((a, b) => b.libi - a.libi || a.zahrano - b.zahrano);
