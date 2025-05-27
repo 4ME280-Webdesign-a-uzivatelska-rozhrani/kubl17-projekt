@@ -62,8 +62,8 @@ function filtrujHry() {
   if (posledniFiltry.typ && posledniFiltry.typ !== "vse") {
     filtrovane = filtrovane.filter(hra => hra.typ === posledniFiltry.typ);
   }
-  if (!isNaN(posledniFiltry.hraciMin)) {
-    filtrovane = filtrovane.filter(hra => hra.hraci_max >= posledniFiltry.hraciMin);
+   if (!isNaN(posledniFiltry.hraciMin)) {
+    filtrovane = filtrovane.filter(hra =>hra.hraci_min <= posledniFiltry.hraciMin && hra.hraci_max >= posledniFiltry.hraciMin);
   }
   // odstraněno filtrování podle hraciMax
   if (!isNaN(posledniFiltry.casMax)) {
