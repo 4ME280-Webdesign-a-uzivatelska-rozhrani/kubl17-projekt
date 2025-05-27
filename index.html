@@ -4,149 +4,44 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Seznam her</title>
-
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
       font-family: Arial, sans-serif;
-      background: #f7f7f7;
-      padding: 20px;
-      margin: 0;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 10px;
     }
-
-    h1, h2 {
-      text-align: center;
-    }
-
-    #filtr-form {
-      max-width: 600px;
-      margin: 0 auto 20px auto;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-    }
-
-    #filtr-form select,
-    #filtr-form input,
-    #filtr-form button {
-      padding: 8px;
-      border-radius: 5px;
+    .hra {
       border: 1px solid #ccc;
-      font-size: 1em;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
     }
-
-    #filtr-form button {
-      background-color: #3498db;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-
-    #filtr-form button:hover {
-      background-color: #2980b9;
-    }
-
-    .hra, .top-hra {
-      max-width: 600px;
-      margin: 10px auto;
-      padding: 12px 16px;
-      border-radius: 8px;
-      background-color: #ffffff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-
-    .top-hra.gold {
-      background-color: #fff7d6;
-      border-left: 6px solid #f1c40f;
-    }
-
-    .top-hra.green {
-      background-color: #e5fbe5;
-      border-left: 6px solid #27ae60;
-    }
-
-    .top-hra.purple {
-      background-color: #f2e5ff;
-      border-left: 6px solid #9b59b6;
-    }
-
-    .hra h3, .top-hra h3 {
-      margin: 0 0 6px 0;
-      font-size: 1.2em;
-    }
-
-    .info-row {
-      font-size: 0.95em;
-      color: #555;
-      display: flex;
-      gap: 15px;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
-    }
-
-    .reaction-row {
-      margin-bottom: 8px;
-    }
-
     button {
-      margin-right: 6px;
-      background-color: #3498db;
-      color: white;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 4px;
-      cursor: pointer;
+      margin-right: 5px;
     }
-
-    button:hover {
-      background-color: #2980b9;
+    form > label {
+      margin-right: 5px;
     }
-
-    @media (max-width: 600px) {
-      #filtr-form {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .info-row {
-        flex-direction: column;
-        gap: 5px;
-      }
-
-      .hra button,
-      .top-hra button {
-        display: block;
-        width: 100%;
-        margin-bottom: 5px;
-      }
+    form > * {
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
 
-  <h1>Seznam domácích her</h1>
+  <h1>Seznam her doma</h1>
 
   <form id="filtr-form">
-    <select id="filtr-typ">
-      <option value="">Všechny typy</option>
-    </select>
-    <input type="number" id="filtr-hraci-min" placeholder="Min hráčů">
-    <input type="number" id="filtr-hraci-max" placeholder="Max hráčů">
-    <input type="number" id="filtr-cas-max" placeholder="Max minut">
-    <button type="submit">Filtrovat</button>
-  </form>
+  <select id="filtr-typ"></select>
+  <input type="number" id="filtr-hraci-min" placeholder="Min hráčů">
+  <input type="number" id="filtr-hraci-max" placeholder="Max hráčů">
+  <input type="number" id="filtr-cas-max" placeholder="Max minut">
+  <button type="submit">Filtrovat</button>
+</form>
 
-  <section id="top3">
-    <!-- Zde se zobrazí top 3 hry (zlatá, zelená, fialová) -->
-  </section>
-
-  <section id="seznam-her">
-    <!-- Zbytek her -->
-  </section>
+<div id="top3"></div>
+<div id="seznam-her"></div>
 
   <script src="script.js"></script>
 
