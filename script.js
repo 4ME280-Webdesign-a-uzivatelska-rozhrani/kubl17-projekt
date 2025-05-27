@@ -103,5 +103,3 @@ async function ulozData() {
     console.error("Chyba při ukládání dat:", error);
   }
 }
-
-}
