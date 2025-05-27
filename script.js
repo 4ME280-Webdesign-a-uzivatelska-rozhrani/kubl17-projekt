@@ -4,8 +4,8 @@ let hry = [];
 document.addEventListener("DOMContentLoaded", async () => {
   await nactiData();
   naplnTypyHerDropdown();
-  zobrazHry(hry);
   zobrazTop3(hry);
+  zobrazHryBezTop3(hry);
   nastavFiltraci();
 });
 
@@ -65,7 +65,6 @@ function zobrazTop3(hryData) {
 
   if (hryData.length === 0) return;
 
-  // Vyber top3
   const topLibi = [...hryData].sort((a, b) => b.libi - a.libi)[0];
   const topZahrano = [...hryData].sort((a, b) => a.zahrano - b.zahrano)[0];
 
@@ -77,28 +76,33 @@ function zobrazTop3(hryData) {
     nahodna = topLibi;
   }
 
-  const vytvorTopHru = (hra, label) => {
+  const top3 = [topLibi, topZahrano, nahodna];
+  const topLabels = ["TOP favorit", "Zahraj si mě prosím", "Náhodná výzva"];
+
+  top3.forEach((hra, i) => {
+    const index = hry.findIndex(h => h.nazev === hra.nazev);
     const div = document.createElement("div");
     div.className = "top-hra";
     div.innerHTML = `
-      <h3>${hra.nazev} <span class="top-label">${label}</span></h3>
+      <h3>${hra.nazev} <span class="top-label">${topLabels[i]}</span></h3>
       <p>Typ: ${hra.typ}</p>
       <p>Počet hráčů: ${hra.hraci_min}–${hra.hraci_max}</p>
       <p>Čas: ${hra.cas_min}–${hra.cas_max} min</p>
       <p>👍 ${hra.libi} | 👎 ${hra.nelibi} | ✅ ${hra.zahrano}</p>
+      <button onclick="oznacLibi(${index})">👍 Líbí</button>
+      <button onclick="oznacNelibi(${index})">👎 Nelíbí</button>
+      <button onclick="oznacZahrano(${index})">✅ Zahrané</button>
     `;
-    return div;
-  };
+    top3Container.appendChild(div);
+  });
 
-  top3Container.appendChild(vytvorTopHru(topLibi, "TOP favorit"));
-  top3Container.appendChild(vytvorTopHru(topZahrano, "Zahraj si mě prosím"));
-  top3Container.appendChild(vytvorTopHru(nahodna, "Náhodná výzva"));
+  // Uložit top3 ID pro pozdější skrytí ze seznamu
+  window._top3Nazvy = top3.map(h => h.nazev);
+}
 
-  // ⚠️ Skryj tyto hry z hlavního seznamu
-  const topIds = new Set([topLibi.nazev, topZahrano.nazev, nahodna.nazev]);
-  const zbyvajiciHry = hryData.filter(hra => !topIds.has(hra.nazev));
-
-  zobrazHry(zbyvajiciHry);
+function zobrazHryBezTop3(hryData) {
+  const zbyvajici = hryData.filter(hra => !window._top3Nazvy.includes(hra.nazev));
+  zobrazHry(zbyvajici);
 }
 
 function nastavFiltraci() {
@@ -113,7 +117,6 @@ function nastavFiltraci() {
     const hraciMax = parseInt(document.getElementById("filtr-hraci-max").value);
     const casMax = parseInt(document.getElementById("filtr-cas-max").value);
 
-    // ✅ Validace vstupů
     if (!isNaN(hraciMin) && hraciMin <= 0) {
       alert("Minimální počet hráčů musí být větší než 0.");
       return;
@@ -149,6 +152,7 @@ function nastavFiltraci() {
     }
 
     zobrazTop3(filtrovane);
+    zobrazHryBezTop3(filtrovane);
   });
 }
 
@@ -156,18 +160,21 @@ function oznacLibi(index) {
   hry[index].libi += 1;
   ulozData();
   zobrazTop3(hry);
+  zobrazHryBezTop3(hry);
 }
 
 function oznacNelibi(index) {
   hry[index].nelibi += 1;
   ulozData();
   zobrazTop3(hry);
+  zobrazHryBezTop3(hry);
 }
 
 function oznacZahrano(index) {
   hry[index].zahrano += 1;
   ulozData();
   zobrazTop3(hry);
+  zobrazHryBezTop3(hry);
 }
 
 async function ulozData() {
