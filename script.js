@@ -80,19 +80,12 @@ function zobrazTop3(hryData) {
 
   const topLibi = [...hryData].sort((a, b) => b.libi - a.libi)[0];
   const topZahrano = [...hryData].sort((a, b) => a.zahrano - b.zahrano)[0];
-
-  // Vyber náhodnou hru pouze pokud je v poli hryData aspoň jedna hra
-  const nahodna = hryData.length > 0 
-    ? hryData[Math.floor(Math.random() * hryData.length)] 
-    : null;
+  const nahodna = hry[Math.floor(Math.random() * hry.length)]; // Z celého seznamu, ne z filtrováných
 
   let top3Unikatni = [];
-  [topLibi, topZahrano].forEach(hra => {
-    if (hra && !top3Unikatni.some(h => h.nazev === hra.nazev)) top3Unikatni.push(hra);
+  [topLibi, topZahrano, nahodna].forEach(hra => {
+    if (!top3Unikatni.some(h => h.nazev === hra.nazev)) top3Unikatni.push(hra);
   });
-  if (nahodna && !top3Unikatni.some(h => h.nazev === nahodna.nazev)) {
-    top3Unikatni.push(nahodna);
-  }
 
   const labels = ["TOP favorit", "Zahraj si mě prosím", "Náhodná výzva"];
   const cssTridy = ["top-favorit", "top-zahraj", "top-nahodna"];
@@ -114,6 +107,7 @@ function zobrazTop3(hryData) {
     top3Container.appendChild(div);
   });
 }
+
 
 function getTop3Hry(hryData) {
   if (hryData.length === 0) return [];
