@@ -28,7 +28,7 @@
       box-shadow: 0 0 12px rgba(0,0,0,0.1);
     }
 
-    h1, h2, h3 {
+    h1, h2 {
       color: #2c3e50;
       margin-bottom: 10px;
     }
@@ -41,29 +41,20 @@
       align-items: center;
     }
 
-    form#filtr-form label {
-      flex: 1 1 100px;
-      font-weight: 600;
-    }
-
     form#filtr-form select,
-    form#filtr-form input[type=number] {
-      flex: 1 1 120px;
+    form#filtr-form input[type=number],
+    form#filtr-form button {
       padding: 6px 8px;
       border: 1px solid #ccc;
       border-radius: 4px;
+      flex: 1 1 120px;
     }
 
     form#filtr-form button {
-      flex: 1 1 100px;
       background-color: #2980b9;
-      border: none;
       color: white;
-      padding: 8px 12px;
-      border-radius: 5px;
       cursor: pointer;
       font-weight: 600;
-      transition: background-color 0.3s;
     }
 
     form#filtr-form button:hover {
@@ -78,44 +69,37 @@
     }
 
     .top-hra.gold {
-      background: #fff6d1;
-      border-left: 6px solid gold;
+      background: #fff9d6;
+      border-left: 6px solid #f1c40f;
     }
 
     .top-hra.green {
-      background: #e0f7e6;
-      border-left: 6px solid #4CAF50;
+      background: #e6fce6;
+      border-left: 6px solid #2ecc71;
     }
 
     .top-hra.purple {
-      background: #f2e5ff;
+      background: #f5eaff;
       border-left: 6px solid #9b59b6;
     }
 
     .hra {
-      background: #eaf1f8;
+      background: #eef5fb;
     }
 
     .hra h3, .top-hra h3 {
-      margin: 0 0 8px 0;
+      margin: 0 0 6px 0;
       font-weight: 700;
       color: #34495e;
-    }
-
-    .top-label {
-      font-size: 0.9em;
-      background-color: #3498db;
-      color: white;
-      padding: 3px 8px;
-      border-radius: 12px;
-      margin-left: 10px;
-      font-weight: 600;
     }
 
     .info-row {
       font-size: 0.95em;
       color: #555;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
     }
 
     .hra button, .top-hra button {
@@ -141,20 +125,20 @@
         flex-direction: column;
       }
 
-      form#filtr-form label,
       form#filtr-form select,
-      form#filtr-form input[type=number],
+      form#filtr-form input,
       form#filtr-form button {
         flex: 1 1 100%;
       }
 
       .hra button, .top-hra button {
-        margin-bottom: 6px;
         width: 100%;
+        margin-bottom: 6px;
       }
 
       .info-row {
-        font-size: 1em;
+        flex-direction: column;
+        gap: 4px;
       }
     }
   </style>
@@ -165,29 +149,23 @@
     <h1>Seznam domácích her</h1>
 
     <form id="filtr-form">
-      <label for="filtr-typ">Typ hry</label>
-      <select id="filtr-typ" name="typ"></select>
-
-      <label for="filtr-hraci-min">Min hráčů</label>
-      <input type="number" id="filtr-hraci-min" min="1" placeholder="min">
-
-      <label for="filtr-hraci-max">Max hráčů</label>
-      <input type="number" id="filtr-hraci-max" min="1" placeholder="max">
-
-      <label for="filtr-cas-max">Max. čas (min)</label>
-      <input type="number" id="filtr-cas-max" min="1" placeholder="max">
-
+      <select id="filtr-typ">
+        <option value="">Všechny typy</option>
+      </select>
+      <input type="number" id="filtr-hraci-min" placeholder="Min hráčů">
+      <input type="number" id="filtr-hraci-max" placeholder="Max hráčů">
+      <input type="number" id="filtr-cas-max" placeholder="Max minut">
       <button type="submit">Filtrovat</button>
     </form>
 
     <section id="top3">
       <h2>Top 3 hry</h2>
-      <!-- top 3 se sem doplní dynamicky -->
+      <!-- Top 3 hry se zde dynamicky zobrazí -->
     </section>
 
     <section id="seznam-her">
-      <h2>Seznam her</h2>
-      <!-- zbytek her se sem doplní dynamicky -->
+      <h2>Všechny ostatní hry</h2>
+      <!-- Zbytek her -->
     </section>
   </div>
 
