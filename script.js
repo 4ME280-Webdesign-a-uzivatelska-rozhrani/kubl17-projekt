@@ -162,25 +162,37 @@ function filtrujHry() {
   return filtrovane;
 }
 
+// 🔧 NOVÉ FUNKCE pro lokální změnu a zápis:
 async function oznacLibi(index) {
   hry[index].libi += 1;
   await ulozData();
-  await nactiData();
-  obnovZobrazeni();
+  aktualizujElementHry(index);
 }
 
 async function oznacNelibi(index) {
   hry[index].nelibi += 1;
   await ulozData();
-  await nactiData();
-  obnovZobrazeni();
+  aktualizujElementHry(index);
 }
 
 async function oznacZahrano(index) {
   hry[index].zahrano += 1;
   await ulozData();
-  await nactiData();
-  obnovZobrazeni();
+  aktualizujElementHry(index);
+}
+
+function aktualizujElementHry(index) {
+  const hra = hry[index];
+  const vsechnyDivy = document.querySelectorAll(".hra, .top-hra");
+
+  vsechnyDivy.forEach(div => {
+    if (div.querySelector("h3")?.textContent?.includes(hra.nazev)) {
+      const p = div.querySelector("p:nth-of-type(4)");
+      if (p) {
+        p.innerHTML = `👍 ${hra.libi} | 👎 ${hra.nelibi} | ✅ ${hra.zahrano}`;
+      }
+    }
+  });
 }
 
 function obnovZobrazeni() {
