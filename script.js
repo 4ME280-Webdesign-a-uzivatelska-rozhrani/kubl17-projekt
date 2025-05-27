@@ -3,6 +3,7 @@ let hry = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
   await nactiData();
+  naplnTypyHerDropdown();
   zobrazHry(hry);
   nastavFiltraci();
 });
@@ -12,11 +13,28 @@ async function nactiData() {
     const res = await fetch(API_URL);
     const data = await res.json();
     hry = data.record.hry;
-    zobrazHry(hry);
-    zobrazTop3(hry); // Pokud chceš, můžeš volat i tady, ale není nutné.
   } catch (error) {
     console.error("Chyba při načítání dat:", error);
   }
+}
+
+function naplnTypyHerDropdown() {
+  const selectTyp = document.getElementById("filtr-typ");
+  if (!selectTyp) return;
+
+  // Vytáhneme unikátní typy her z dat
+  const typy = [...new Set(hry.map(hra => hra.typ))].sort();
+
+  // Vyčistíme dropdown a přidáme možnost "Vše"
+  selectTyp.innerHTML = '<option value="vse">Vše</option>';
+
+  // Přidáme typy z dat
+  typy.forEach(typ => {
+    const option = document.createElement("option");
+    option.value = typ;
+    option.textContent = typ.charAt(0).toUpperCase() + typ.slice(1);
+    selectTyp.appendChild(option);
+  });
 }
 
 function zobrazHry(hryData) {
@@ -24,7 +42,6 @@ function zobrazHry(hryData) {
   seznam.innerHTML = "";
 
   hryData.forEach((hra, index) => {
-    // Připravíme značku pro TOP 3
     let topText = "";
     if (hra._topTag) {
       topText = `<div class="top-tag">${hra._topTag}</div>`;
@@ -65,46 +82,39 @@ function nastavFiltraci() {
     if (!isNaN(hraci)) filtrovane = filtrovane.filter(hra => hra.hraci_min <= hraci && hra.hraci_max >= hraci);
     if (!isNaN(cas)) filtrovane = filtrovane.filter(hra => hra.cas_max <= cas);
 
-    // Připravíme TOP 3
     const top3 = vyberTop3(filtrovane);
 
-    // Odstraníme TOP 3 z filtrovane, aby se neopakovali
-    const top3Ids = new Set(top3.map(h => h.nazev));
-    const dalsi = filtrovane.filter(h => !top3Ids.has(h.nazev));
+    const top3Nazvy = new Set(top3.map(h => h.nazev));
+    const dalsi = filtrovane.filter(h => !top3Nazvy.has(h.nazev));
 
-    // Sestavíme finální pole: top3 na začátek + zbytek
     const finalniSeznam = [...top3, ...dalsi];
 
     zobrazHry(finalniSeznam);
   });
 }
 
-// Funkce pro výběr TOP 3 her s označením
 function vyberTop3(hryPole) {
   if (hryPole.length === 0) return [];
 
-  // 1. Nejčastěji označená jako oblíbená (libi nejvíc)
   const topLibi = hryPole.reduce((max, hra) => (hra.libi > (max?.libi ?? -1) ? hra : max), null);
-
-  // 2. Nejmenší počet zahrano (minimálně zahrané)
   const topZahrano = hryPole.reduce((min, hra) => (hra.zahrano < (min?.zahrano ?? Infinity) ? hra : min), null);
 
-  // 3. Náhodná
   let nahodna;
   if (hryPole.length === 1) {
     nahodna = hryPole[0];
   } else {
     do {
       nahodna = hryPole[Math.floor(Math.random() * hryPole.length)];
-    } while (nahodna.nazev === topLibi.nazev || nahodna.nazev === topZahrano.nazev);
+    } while (
+      nahodna.nazev === topLibi.nazev ||
+      nahodna.nazev === topZahrano.nazev
+    );
   }
 
-  // Přidej vlastnost _topTag pro zobrazení štítku
   if (topLibi) topLibi._topTag = "TOP favorit";
   if (topZahrano) topZahrano._topTag = "Zahraj si mě prosím";
   if (nahodna) nahodna._topTag = "Náhodná výzva";
 
-  // Odstranit duplikáty pokud se některá hra shoduje (může se stát, když má jen pár her)
   const unikaty = [];
   const nazvy = new Set();
 
