@@ -1,5 +1,6 @@
 const API_URL = "https://kubl17-projekt.kubl17.workers.dev/";
 let hry = [];
+let aktualniFiltrovane = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
   await nactiData();
@@ -14,6 +15,7 @@ async function nactiData() {
     const res = await fetch(API_URL);
     const data = await res.json();
     hry = data.record.hry;
+    aktualniFiltrovane = [...hry];
   } catch (error) {
     console.error("Chyba při načítání dat:", error);
   }
@@ -24,6 +26,7 @@ function naplnTypyHerDropdown() {
   if (!selectTyp) return;
 
   const typy = [...new Set(hry.map(hra => hra.typ))].sort();
+
   selectTyp.innerHTML = '<option value="vse">Vše</option>';
 
   typy.forEach(typ => {
@@ -34,12 +37,17 @@ function naplnTypyHerDropdown() {
   });
 }
 
-function zobrazHry(hryData) {
+function zobrazHryBezTop3(hryData) {
   const seznam = document.getElementById("seznam-her");
   if (!seznam) return;
   seznam.innerHTML = "";
 
-  hryData.forEach((hra, index) => {
+  // Získej hry z top3, aby se neopakovaly
+  const top3Hry = getTop3Hry(hryData);
+
+  const hryKZobrazeni = hryData.filter(hra => !top3Hry.includes(hra));
+
+  hryKZobrazeni.forEach((hra, index) => {
     const hraDiv = document.createElement("div");
     hraDiv.className = "hra";
 
@@ -49,13 +57,17 @@ function zobrazHry(hryData) {
       <p>Počet hráčů: ${hra.hraci_min}–${hra.hraci_max}</p>
       <p>Čas: ${hra.cas_min}–${hra.cas_max} min</p>
       <p>👍 ${hra.libi} | 👎 ${hra.nelibi} | ✅ ${hra.zahrano}</p>
-      <button onclick="oznacLibi(${index})">👍 Líbí</button>
-      <button onclick="oznacNelibi(${index})">👎 Nelíbí</button>
-      <button onclick="oznacZahrano(${index})">✅ Zahrané</button>
+      <button onclick="oznacLibi(${getHraIndex(hra)})">👍 Líbí</button>
+      <button onclick="oznacNelibi(${getHraIndex(hra)})">👎 Nelíbí</button>
+      <button onclick="oznacZahrano(${getHraIndex(hra)})">✅ Zahrané</button>
     `;
 
     seznam.appendChild(hraDiv);
   });
+}
+
+function getHraIndex(hra) {
+  return hry.findIndex(h => h.nazev === hra.nazev);
 }
 
 function zobrazTop3(hryData) {
@@ -63,51 +75,55 @@ function zobrazTop3(hryData) {
   if (!top3Container) return;
   top3Container.innerHTML = "";
 
-  const kopie = [...hryData];
+  if (hryData.length === 0) return;
 
-  // 1. Nejvíce líbí
-  const topLibi = kopie.sort((a, b) => b.libi - a.libi).find(h => true);
-  const zbyle1 = kopie.filter(h => h.nazev !== topLibi?.nazev);
+  // 1. Nejčastěji označená jako oblíbená
+  const topLibi = [...hryData].sort((a,b) => b.libi - a.libi)[0];
 
-  // 2. Nejmeně zahrané
-  const topZahrano = zbyle1.sort((a, b) => a.zahrano - b.zahrano).find(h => true);
-  const zbyle2 = zbyle1.filter(h => h.nazev !== topZahrano?.nazev);
+  // 2. Nejmeně zahraná (nejnižší zahrano)
+  const topZahrano = [...hryData].sort((a,b) => a.zahrano - b.zahrano)[0];
 
-  // 3. Náhodná jiná
-  const nahodna = zbyle2.length > 0
-    ? zbyle2[Math.floor(Math.random() * zbyle2.length)]
-    : null;
+  // 3. Náhodná
+  const nahodna = hryData[Math.floor(Math.random() * hryData.length)];
 
-  const top3 = [topLibi, topZahrano, nahodna].filter(Boolean);
-  const topLabels = ["TOP favorit", "Zahraj si mě prosím", "Náhodná výzva"];
+  // Vyhneme se opakování v top3 (unikátní hry)
+  let top3Unikatni = [];
+  [topLibi, topZahrano, nahodna].forEach(hra => {
+    if (!top3Unikatni.includes(hra)) top3Unikatni.push(hra);
+  });
 
-  window._top3Nazvy = [];
+  const labels = ["TOP favorit", "Zahraj si mě prosím", "Náhodná výzva"];
 
-  top3.forEach((hra, i) => {
-    const index = hry.findIndex(h => h.nazev === hra.nazev);
-    if (index === -1) return;
-
-    window._top3Nazvy.push(hra.nazev);
-
+  top3Unikatni.forEach((hra, i) => {
     const div = document.createElement("div");
     div.className = "top-hra";
     div.innerHTML = `
-      <h3>${hra.nazev} <span class="top-label">${topLabels[i]}</span></h3>
+      <h3>${hra.nazev} <span class="top-label">${labels[i]}</span></h3>
       <p>Typ: ${hra.typ}</p>
       <p>Počet hráčů: ${hra.hraci_min}–${hra.hraci_max}</p>
       <p>Čas: ${hra.cas_min}–${hra.cas_max} min</p>
       <p>👍 ${hra.libi} | 👎 ${hra.nelibi} | ✅ ${hra.zahrano}</p>
-      <button onclick="oznacLibi(${index})">👍 Líbí</button>
-      <button onclick="oznacNelibi(${index})">👎 Nelíbí</button>
-      <button onclick="oznacZahrano(${index})">✅ Zahrané</button>
+      <button onclick="oznacLibi(${getHraIndex(hra)})">👍 Líbí</button>
+      <button onclick="oznacNelibi(${getHraIndex(hra)})">👎 Nelíbí</button>
+      <button onclick="oznacZahrano(${getHraIndex(hra)})">✅ Zahrané</button>
     `;
     top3Container.appendChild(div);
   });
 }
 
-function zobrazHryBezTop3(hryData) {
-  const zbyvajici = hryData.filter(hra => !window._top3Nazvy.includes(hra.nazev));
-  zobrazHry(zbyvajici);
+function getTop3Hry(hryData) {
+  if (hryData.length === 0) return [];
+
+  const topLibi = [...hryData].sort((a,b) => b.libi - a.libi)[0];
+  const topZahrano = [...hryData].sort((a,b) => a.zahrano - b.zahrano)[0];
+  const nahodna = hryData[Math.floor(Math.random() * hryData.length)];
+
+  // Unikátní set
+  let top3 = [];
+  [topLibi, topZahrano, nahodna].forEach(hra => {
+    if (!top3.includes(hra)) top3.push(hra);
+  });
+  return top3;
 }
 
 function nastavFiltraci() {
@@ -122,10 +138,9 @@ function nastavFiltraci() {
     const hraciMax = parseInt(document.getElementById("filtr-hraci-max").value);
     const casMax = parseInt(document.getElementById("filtr-cas-max").value);
 
+    // Ošetření nesmyslných filtrů (min > max)
     if (!isNaN(hraciMin) && !isNaN(hraciMax) && hraciMin > hraciMax) {
       alert("Minimální počet hráčů nemůže být větší než maximální.");
-      zobrazHry([]);
-      zobrazTop3([]);
       return;
     }
 
@@ -144,30 +159,37 @@ function nastavFiltraci() {
       filtrovane = filtrovane.filter(hra => hra.cas_max <= casMax);
     }
 
+    aktualniFiltrovane = filtrovane;
+
     zobrazTop3(filtrovane);
     zobrazHryBezTop3(filtrovane);
   });
 }
 
-function oznacLibi(index) {
+async function oznacLibi(index) {
   hry[index].libi += 1;
-  ulozData();
-  zobrazTop3(hry);
-  zobrazHryBezTop3(hry);
+  await ulozData();
+  await nactiData();
+  obnovZobrazeni();
 }
 
-function oznacNelibi(index) {
+async function oznacNelibi(index) {
   hry[index].nelibi += 1;
-  ulozData();
-  zobrazTop3(hry);
-  zobrazHryBezTop3(hry);
+  await ulozData();
+  await nactiData();
+  obnovZobrazeni();
 }
 
-function oznacZahrano(index) {
+async function oznacZahrano(index) {
   hry[index].zahrano += 1;
-  ulozData();
-  zobrazTop3(hry);
-  zobrazHryBezTop3(hry);
+  await ulozData();
+  await nactiData();
+  obnovZobrazeni();
+}
+
+function obnovZobrazeni() {
+  zobrazTop3(aktualniFiltrovane);
+  zobrazHryBezTop3(aktualniFiltrovane);
 }
 
 async function ulozData() {
