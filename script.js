@@ -17,6 +17,19 @@ async function nactiData() {
     console.error("Chyba při načítání dat:", error);
   }
 }
+async function nactiData() {
+  try {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+    hry = data.record.hry;
+
+    naplnFiltrTypy(hry);      // tady doplníš typy do selectu
+    zobrazHry(hry);
+    zobrazTop3(hry);
+  } catch (error) {
+    console.error("Chyba při načítání dat:", error);
+  }
+}
 
 function zobrazHry(hryData) {
   const seznam = document.getElementById("seznam-her");
