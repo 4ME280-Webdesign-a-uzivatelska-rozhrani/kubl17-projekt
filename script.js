@@ -174,51 +174,22 @@ async function oznacLibi(index) {
   hry[index].libi += 1;
   await ulozData();
   await nactiData();
-  obnovPoKliknuti();
+  obnovZobrazeni();
 }
 
 async function oznacNelibi(index) {
   hry[index].nelibi += 1;
   await ulozData();
   await nactiData();
-  obnovPoKliknuti();
+  obnovZobrazeni();
 }
 
 async function oznacZahrano(index) {
   hry[index].zahrano += 1;
   await ulozData();
   await nactiData();
-  obnovPoKliknuti();
+  obnovZobrazeni();
 }
-
-
-function obnovPoKliknuti() {
-  const typ = document.getElementById("filtr-typ").value;
-  const hraciMin = parseInt(document.getElementById("filtr-hraci-min").value);
-  const hraciMax = parseInt(document.getElementById("filtr-hraci-max").value);
-  const casMax = parseInt(document.getElementById("filtr-cas-max").value);
-
-  let filtrovane = [...hry];
-
-  if (typ && typ !== "vse") {
-    filtrovane = filtrovane.filter(hra => hra.typ === typ);
-  }
-  if (!isNaN(hraciMin)) {
-    filtrovane = filtrovane.filter(hra => hra.hraci_max >= hraciMin);
-  }
-  if (!isNaN(hraciMax)) {
-    filtrovane = filtrovane.filter(hra => hra.hraci_min <= hraciMax);
-  }
-  if (!isNaN(casMax)) {
-    filtrovane = filtrovane.filter(hra => hra.cas_max <= casMax);
-  }
-
-  aktualniFiltrovane = filtrovane;
-
-  zobrazTop3(filtrovane);
-  zobrazHryBezTop3(filtrovane);
-}
-
 
 function obnovZobrazeni() {
   zobrazTop3(aktualniFiltrovane);
