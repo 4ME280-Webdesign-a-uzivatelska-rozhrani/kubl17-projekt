@@ -93,11 +93,11 @@ function zobrazTop3(hryData) {
   });
 
   const labels = ["TOP favorit", "Zahraj si mě prosím", "Náhodná výzva"];
-  const tridy = ["top-favorit", "top-zahraj", "top-nahodna"];
+  const cssTridy = ["top-favorit", "top-zahraj", "top-nahodna"];
 
   top3Unikatni.forEach((hra, i) => {
     const div = document.createElement("div");
-    div.className = `top-hra ${tridy[i]}`;
+    div.className = `top-hra ${cssTridy[i]}`;
     div.innerHTML = `
       <h3>${hra.nazev} <span class="top-label">${labels[i]}</span></h3>
       <p>Typ: ${hra.typ}</p>
