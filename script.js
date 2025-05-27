@@ -57,13 +57,18 @@ async function ulozData() {
   try {
     await fetch(API_URL, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ hry })
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        record: { hry }  // celý objekt obalený do klíče "record"
+      })
     });
   } catch (err) {
     console.error("Chyba při ukládání dat:", err);
   }
 }
+
 
 function zobrazTop3(seznam) {
   const ul = document.getElementById("top3");
