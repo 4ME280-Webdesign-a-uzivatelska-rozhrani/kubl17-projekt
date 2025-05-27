@@ -13,29 +13,37 @@ body {
   color: #222;
 }
 .top-favorit {
-  background-color: #FFD700; /* zlatá */
-  color: #333; /* tmavší text, aby byl čitelný */
+  background-color: #ffd700; /* zlatá */
+  color: black;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
 }
 
 .top-zahraj {
-  background-color: #ccffcc; /* světle zelená */
-  color: #333;
+  background-color: #d4edda; /* světlá zelená */
+  color: #155724;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(40, 167, 69, 0.7);
 }
 
 .top-nahodna {
-  background-color: #b19cd9; /* fialová (světlejší) */
-  color: #333;
+  background-color: #d6d1f7; /* světlá fialová */
+  color: #3f2f8f;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(111, 66, 193, 0.7);
 }
 
-
-
 .top-label {
-  font-weight: bold;
   font-size: 0.9em;
-  background: rgba(255,255,255,0.6);
-  padding: 0.2em 0.5em;
-  border-radius: 4px;
-  margin-left: 0.5em;
+  font-weight: 600;
+  margin-left: 10px;
+  opacity: 0.8;
 }
 
 /* Kontejner pro seznam her a top3 */
