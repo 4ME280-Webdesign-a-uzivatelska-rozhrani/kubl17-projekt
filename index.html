@@ -25,10 +25,21 @@
     <button onclick="filtruj()">Filtrovat</button>
   </div>
 
-  <div id="doporučení">
-    <h2>Doporučené hry</h2>
-    <ul id="top3"></ul>
-  </div>
+  <!-- Filtrace her -->
+<div id="filtry">
+  <label for="typ">Druh hry:</label>
+  <select id="typ" onchange="filtruj()">
+    <option value="">Všechny</option>
+    <option value="karetní">Karetní</option>
+    <option value="desková">Desková</option>
+  </select>
+
+  <label for="hraci">Min. počet hráčů:</label>
+  <input id="hraci" type="number" min="1" placeholder="Např. 2" onchange="filtruj()">
+
+  <label for="cas">Maximální délka (min):</label>
+  <input id="cas" type="number" min="1" placeholder="Např. 30" onchange="filtruj()">
+</div>
 
   <div id="vysledky">
     <h2>Všechny hry</h2>
