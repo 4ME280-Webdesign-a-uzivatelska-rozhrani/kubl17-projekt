@@ -46,7 +46,7 @@ function zobrazHryBezTop3(hryData) {
   seznam.innerHTML = "";
 
   const top3Hry = getTop3Hry(hryData);
-  const hryKZobrazeni = hryData.filter(hra => !top3Hry.some(h => h.nazev === hra.nazev));
+  const hryKZobrazeni = hryData.filter(hra => !top3Hry.some(th => th.nazev === hra.nazev));
 
   hryKZobrazeni.forEach((hra) => {
     const hraDiv = document.createElement("div");
@@ -78,7 +78,21 @@ function zobrazTop3(hryData) {
 
   if (hryData.length === 0) return;
 
-  const top3Unikatni = getTop3Hry(hryData);
+  const topLibi = [...hryData].sort((a, b) => b.libi - a.libi)[0];
+  const topZahrano = [...hryData].sort((a, b) => a.zahrano - b.zahrano)[0];
+
+  // Vyber náhodnou hru pouze pokud je v poli hryData aspoň jedna hra
+  const nahodna = hryData.length > 0 
+    ? hryData[Math.floor(Math.random() * hryData.length)] 
+    : null;
+
+  let top3Unikatni = [];
+  [topLibi, topZahrano].forEach(hra => {
+    if (hra && !top3Unikatni.some(h => h.nazev === hra.nazev)) top3Unikatni.push(hra);
+  });
+  if (nahodna && !top3Unikatni.some(h => h.nazev === nahodna.nazev)) {
+    top3Unikatni.push(nahodna);
+  }
 
   const labels = ["TOP favorit", "Zahraj si mě prosím", "Náhodná výzva"];
   const cssTridy = ["top-favorit", "top-zahraj", "top-nahodna"];
@@ -104,17 +118,17 @@ function zobrazTop3(hryData) {
 function getTop3Hry(hryData) {
   if (hryData.length === 0) return [];
 
-  // Nejvíc líbí
   const topLibi = [...hryData].sort((a, b) => b.libi - a.libi)[0];
-  // Nejmíň zahrano (ale pozor, pokud tam je více her s 0, vybere první)
   const topZahrano = [...hryData].sort((a, b) => a.zahrano - b.zahrano)[0];
-  // Náhodná ze stejného filtrovaného seznamu
-  const nahodna = hryData[Math.floor(Math.random() * hryData.length)];
+  const nahodna = hryData.length > 0 
+    ? hryData[Math.floor(Math.random() * hryData.length)] 
+    : null;
 
   let top3 = [];
-  [topLibi, topZahrano, nahodna].forEach(hra => {
-    if (!top3.some(h => h.nazev === hra.nazev)) top3.push(hra);
+  [topLibi, topZahrano].forEach(hra => {
+    if (hra && !top3.some(h => h.nazev === hra.nazev)) top3.push(hra);
   });
+  if (nahodna && !top3.some(h => h.nazev === nahodna.nazev)) top3.push(nahodna);
 
   return top3;
 }
@@ -180,11 +194,13 @@ async function oznacZahrano(index) {
 function aktualizujZobrazeniHry(index) {
   const hra = hry[index];
 
+  // Najdi všechny divy (v top3 i v hlavním seznamu), které mají danou hru podle názvu
   const divy = document.querySelectorAll(".hra, .top-hra");
   divy.forEach(div => {
     const h3 = div.querySelector("h3");
     if (!h3) return;
 
+    // Porovnáme podle názvu - ať funguje i v top3, kde je label navíc
     if (h3.textContent.includes(hra.nazev)) {
       const p = div.querySelectorAll("p");
       if (p.length >= 4) {
