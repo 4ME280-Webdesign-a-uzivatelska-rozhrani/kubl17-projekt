@@ -84,8 +84,9 @@ function getTop3HryOnce(hryData) {
   const topLibi = kopie.shift();
   top3.push(topLibi);
 
-  kopie.sort((a, b) => b.zahrano - a.zahrano);
-  const topZahrano = kopie.find(h => h.nazev !== topLibi.nazev);
+ kopie.sort((a, b) => a.zahrano - b.zahrano);
+const topZahrano = kopie.find(h => h.nazev !== topLibi.nazev);
+
   if (topZahrano) {
     kopie.splice(kopie.indexOf(topZahrano), 1);
     top3.push(topZahrano);
