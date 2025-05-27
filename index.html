@@ -2,30 +2,14 @@
 <html lang="cs">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Seznam her</title>
-  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>🎲 Seznam her</h1>
-  
-  <div id="filtry">
-    <label>Typ:
-      <select id="typ">
-        <option value="">Vše</option>
-        <option value="karetní">Karetní</option>
-        <option value="desková">Desková</option>
-      </select>
-    </label>
-    <label>Hráči:
-      <input type="number" id="hraci" min="1" placeholder="Počet" />
-    </label>
-    <label>Max čas (minuty):
-      <input type="number" id="cas" min="1" placeholder="Čas" />
-    </label>
-    <button onclick="filtruj()">Filtrovat</button>
-  </div>
 
-  <!-- Filtrace her -->
+<h1>Seznam her</h1>
+
+<!-- Filtry -->
 <div id="filtry">
   <label for="typ">Druh hry:</label>
   <select id="typ" onchange="filtruj()">
@@ -41,12 +25,13 @@
   <input id="cas" type="number" min="1" placeholder="Např. 30" onchange="filtruj()">
 </div>
 
-  <div id="vysledky">
-    <h2>Všechny hry</h2>
-    <ul id="seznam"></ul>
-  </div>
+<!-- Seznam her -->
+<ul id="seznam"></ul>
 
-  <script src="script.js"></script>
+<h2>Top 3 hry</h2>
+<ul id="top3"></ul>
+
+<script src="script.js"></script>
+
 </body>
 </html>
-
