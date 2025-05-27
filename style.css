@@ -13,19 +13,20 @@ body {
   color: #222;
 }
 .top-favorit {
-  background-color: #ffd700 !important; /* zlatá */
-  color: #3a2e00 !important;
+  background-color: #FFD700; /* zlatá */
+  color: #333; /* tmavší text, aby byl čitelný */
 }
 
 .top-zahraj {
-  background-color: #d4edda !important; /* světle zelená */
-  color: #155724 !important;
+  background-color: #ccffcc; /* světle zelená */
+  color: #333;
 }
 
 .top-nahodna {
-  background-color: #d6c5f7 !important; /* světle fialová */
-  color: #3a1f6e !important;
+  background-color: #b19cd9; /* fialová (světlejší) */
+  color: #333;
 }
+
 
 
 .top-label {
