@@ -93,23 +93,28 @@ function zobrazHryBezTop3(hryData, top3) {
   });
 }
 
-function getTop3Hry(hryData) {
+function getTop3HryOnce(hryData) {
+  const kopie = [...hryData];
   const top3 = [];
 
-  if (hryData.length === 0) return top3;
+  if (kopie.length === 0) return top3;
 
-  const sortedLibi = [...hryData].sort((a, b) => b.libi - a.libi);
-  const topLibi = sortedLibi[0];
+  // Nejvíce líbí
+  kopie.sort((a, b) => b.libi - a.libi);
+  const topLibi = kopie.shift();
   top3.push(topLibi);
 
-  const sortedZahrano = [...hryData].sort((a, b) => b.zahrano - a.zahrano);
-  const topZahrano = sortedZahrano.find(h => h.nazev !== topLibi.nazev);
-  if (topZahrano) top3.push(topZahrano);
+  // Nejvíce zahrané (odstraníme topLibi pokud byl zároveň)
+  kopie.sort((a, b) => b.zahrano - a.zahrano);
+  const topZahrano = kopie.find(h => h.nazev !== topLibi.nazev);
+  if (topZahrano) {
+    kopie.splice(kopie.indexOf(topZahrano), 1);
+    top3.push(topZahrano);
+  }
 
-  const excludedNames = top3.map(h => h.nazev);
-  const zbytek = hryData.filter(h => !excludedNames.includes(h.nazev));
-  if (zbytek.length > 0) {
-    const nahodna = zbytek[Math.floor(Math.random() * zbytek.length)];
+  // Náhodná zbylá hra
+  if (kopie.length > 0) {
+    const nahodna = kopie[Math.floor(Math.random() * kopie.length)];
     top3.push(nahodna);
   }
 
@@ -201,10 +206,11 @@ function aktualizujZobrazeniHry(index) {
 
 function obnovZobrazeni() {
   const filtrovane = filtrujHry();
-  const top3 = getTop3Hry(filtrovane);
+  const top3 = getTop3HryOnce(filtrovane);
   zobrazTop3(top3);
   zobrazHryBezTop3(filtrovane, top3);
 }
+
 
 
 async function ulozData() {
