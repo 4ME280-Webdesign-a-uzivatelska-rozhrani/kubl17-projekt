@@ -3,7 +3,6 @@ let hry = [];
 let posledniFiltry = {
   typ: "vse",
   hraciMin: null,
-  hraciMax: null,
   casMax: null
 };
 
@@ -48,13 +47,10 @@ function nastavFiltraci() {
 
     posledniFiltry.typ = document.getElementById("filtr-typ").value;
     posledniFiltry.hraciMin = parseInt(document.getElementById("filtr-hraci-min").value);
-    posledniFiltry.hraciMax = parseInt(document.getElementById("filtr-hraci-max").value);
+    // hraciMax odstraněno
     posledniFiltry.casMax = parseInt(document.getElementById("filtr-cas-max").value);
 
-    if (!isNaN(posledniFiltry.hraciMin) && !isNaN(posledniFiltry.hraciMax) && posledniFiltry.hraciMin > posledniFiltry.hraciMax) {
-      alert("Minimální počet hráčů nemůže být větší než maximální.");
-      return;
-    }
+    // odstraněna validace hraciMin > hraciMax
 
     obnovZobrazeni();
   });
@@ -69,9 +65,7 @@ function filtrujHry() {
   if (!isNaN(posledniFiltry.hraciMin)) {
     filtrovane = filtrovane.filter(hra => hra.hraci_max >= posledniFiltry.hraciMin);
   }
-  if (!isNaN(posledniFiltry.hraciMax)) {
-    filtrovane = filtrovane.filter(hra => hra.hraci_min <= posledniFiltry.hraciMax);
-  }
+  // odstraněno filtrování podle hraciMax
   if (!isNaN(posledniFiltry.casMax)) {
     filtrovane = filtrovane.filter(hra => hra.cas_max <= posledniFiltry.casMax);
   }
