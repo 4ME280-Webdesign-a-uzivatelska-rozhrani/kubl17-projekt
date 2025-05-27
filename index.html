@@ -4,44 +4,181 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Seznam her</title>
+
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      max-width: 800px;
-      margin: 20px auto;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9f9f9;
+      color: #222;
+      margin: 0;
       padding: 10px;
+      line-height: 1.5;
     }
-    .hra {
+
+    #app {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    }
+
+    h1, h2, h3 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+
+    h3 {
+      font-size: 1.2em;
+      margin-top: 0;
+    }
+
+    form#filtr-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+
+    form#filtr-form label {
+      flex: 1 1 100px;
+      font-weight: 600;
+    }
+
+    form#filtr-form select,
+    form#filtr-form input[type=number] {
+      flex: 1 1 120px;
+      padding: 6px 8px;
       border: 1px solid #ccc;
-      padding: 10px;
-      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+
+    form#filtr-form button {
+      flex: 1 1 100px;
+      background-color: #2980b9;
+      border: none;
+      color: white;
+      padding: 8px 12px;
       border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s;
     }
-    button {
-      margin-right: 5px;
+
+    form#filtr-form button:hover {
+      background-color: #1f5a86;
     }
-    form > label {
-      margin-right: 5px;
+
+    #seznam-her {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
     }
-    form > * {
-      margin-bottom: 10px;
+
+    .hra, .top-hra {
+      background: #eaf1f8;
+      border-radius: 6px;
+      padding: 12px 15px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      user-select: none;
+    }
+
+    .hra h3, .top-hra h3 {
+      margin: 0 0 8px 0;
+      font-weight: 700;
+      color: #34495e;
+    }
+
+    .top-label {
+      font-size: 0.9em;
+      background-color: #3498db;
+      color: white;
+      padding: 3px 8px;
+      border-radius: 12px;
+      margin-left: 10px;
+      font-weight: 600;
+    }
+
+    .hra p, .top-hra p {
+      margin: 4px 0;
+      font-size: 0.95em;
+      color: #555;
+    }
+
+    .hra button, .top-hra button {
+      background-color: #2980b9;
+      border: none;
+      color: white;
+      padding: 6px 10px;
+      margin-right: 6px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9em;
+      transition: background-color 0.25s ease;
+      user-select: none;
+    }
+
+    .hra button:hover, .top-hra button:hover {
+      background-color: #1f5a86;
+    }
+
+    @media (max-width: 480px) {
+      form#filtr-form {
+        flex-direction: column;
+      }
+
+      form#filtr-form label,
+      form#filtr-form select,
+      form#filtr-form input[type=number],
+      form#filtr-form button {
+        flex: 1 1 100%;
+      }
+
+      .hra button, .top-hra button {
+        margin-bottom: 6px;
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
 
-  <h1>Seznam her doma</h1>
+  <div id="app">
+    <h1>Seznam domácích her</h1>
 
-  <form id="filtr-form">
-  <select id="filtr-typ"></select>
-  <input type="number" id="filtr-hraci-min" placeholder="Min hráčů">
-  <input type="number" id="filtr-hraci-max" placeholder="Max hráčů">
-  <input type="number" id="filtr-cas-max" placeholder="Max minut">
-  <button type="submit">Filtrovat</button>
-</form>
+    <form id="filtr-form">
+      <label for="filtr-typ">Typ hry</label>
+      <select id="filtr-typ" name="typ"></select>
 
-<div id="top3"></div>
-<div id="seznam-her"></div>
+      <label for="filtr-hraci-min">Min hráčů</label>
+      <input type="number" id="filtr-hraci-min" min="1" placeholder="min">
+
+      <label for="filtr-hraci-max">Max hráčů</label>
+      <input type="number" id="filtr-hraci-max" min="1" placeholder="max">
+
+      <label for="filtr-cas-max">Max. čas (min)</label>
+      <input type="number" id="filtr-cas-max" min="1" placeholder="max">
+
+      <button type="submit">Filtrovat</button>
+    </form>
+
+    <section id="top3">
+      <h2>Top 3 hry</h2>
+      <!-- top 3 se sem doplní dynamicky -->
+    </section>
+
+    <section id="seznam-her">
+      <h2>Seznam her</h2>
+      <!-- zbytek her se sem doplní dynamicky -->
+    </section>
+  </div>
 
   <script src="script.js"></script>
 
