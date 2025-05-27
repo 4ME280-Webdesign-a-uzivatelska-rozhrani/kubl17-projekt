@@ -64,13 +64,8 @@ function zobrazTop3(hryData) {
   if (!top3Container) return;
   top3Container.innerHTML = "";
 
-  // 1. Nejčastěji označená jako oblíbená
   const topLibi = [...hryData].sort((a,b) => b.libi - a.libi)[0];
-
-  // 2. Nejmeně zahraná (nejnižší zahrano)
   const topZahrano = [...hryData].sort((a,b) => a.zahrano - b.zahrano)[0];
-
-  // 3. Náhodná
   const nahodna = hryData[Math.floor(Math.random() * hryData.length)];
 
   const vytvorTopHru = (hra, label) => {
@@ -99,7 +94,7 @@ function nastavFiltraci() {
     e.preventDefault();
 
     const typ = document.getElementById("filtr-typ").value;
-    const hraciMin = parseInt(document.getElementById("filtr-hraci-min").value);
+    // const hraciMin = parseInt(document.getElementById("filtr-hraci-min").value);  // odstraněno
     const hraciMax = parseInt(document.getElementById("filtr-hraci-max").value);
     const casMax = parseInt(document.getElementById("filtr-cas-max").value);
 
@@ -108,9 +103,9 @@ function nastavFiltraci() {
     if (typ && typ !== "vse") {
       filtrovane = filtrovane.filter(hra => hra.typ === typ);
     }
-    if (!isNaN(hraciMin)) {
-      filtrovane = filtrovane.filter(hra => hra.hraci_max >= hraciMin);
-    }
+    // if (!isNaN(hraciMin)) {
+    //   filtrovane = filtrovane.filter(hra => hra.hraci_max >= hraciMin);
+    // }
     if (!isNaN(hraciMax)) {
       filtrovane = filtrovane.filter(hra => hra.hraci_min <= hraciMax);
     }
