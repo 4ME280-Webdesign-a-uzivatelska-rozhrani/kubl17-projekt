@@ -81,15 +81,31 @@ function zobrazTop3(hryData) {
 
   const topLibi = [...hryData].sort((a, b) => b.libi - a.libi)[0];
   const topZahrano = [...hryData].sort((a, b) => a.zahrano - b.zahrano)[0];
-  const nahodna = hryData.length > 0
-    ? hryData[Math.floor(Math.random() * hryData.length)]
-    : null;
+
+  // Pomocná funkce pro výběr náhodné hry unikátní vůči danému seznamu
+  function vyberNahodnouUnikatni(existingHry) {
+    if (hryData.length === 0) return null;
+    const maxPokusy = 20;
+    let pokusy = 0;
+    while (pokusy < maxPokusy) {
+      const nahodna = hryData[Math.floor(Math.random() * hryData.length)];
+      if (!existingHry.some(h => h.nazev === nahodna.nazev)) {
+        return nahodna;
+      }
+      pokusy++;
+    }
+    // Pokud nenajde unikátní, vrátí null
+    return null;
+  }
 
   let top3Unikatni = [];
-  [topLibi, topZahrano].forEach(hra => {
-    if (!top3Unikatni.some(h => h.nazev === hra.nazev)) top3Unikatni.push(hra);
-  });
-  if (nahodna && !top3Unikatni.some(h => h.nazev === nahodna.nazev)) top3Unikatni.push(nahodna);
+  if (topLibi) top3Unikatni.push(topLibi);
+  if (topZahrano && !top3Unikatni.some(h => h.nazev === topZahrano.nazev)) {
+    top3Unikatni.push(topZahrano);
+  }
+
+  const nahodna = vyberNahodnouUnikatni(top3Unikatni);
+  if (nahodna) top3Unikatni.push(nahodna);
 
   const labels = ["TOP favorit", "Zahraj si mě prosím", "Náhodná výzva"];
   const cssTridy = ["top-favorit", "top-zahraj", "top-nahodna"];
@@ -111,6 +127,7 @@ function zobrazTop3(hryData) {
     top3Container.appendChild(div);
   });
 }
+
 
 
 
