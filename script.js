@@ -162,34 +162,38 @@ function filtrujHry() {
   return filtrovane;
 }
 
-// 🔧 NOVÉ FUNKCE pro lokální změnu a zápis:
 async function oznacLibi(index) {
   hry[index].libi += 1;
-  await ulozData();
-  aktualizujElementHry(index);
+  aktualizujZobrazeniHry(index);
+  ulozData(); // uloží na pozadí, ale nečekáme
 }
 
 async function oznacNelibi(index) {
   hry[index].nelibi += 1;
-  await ulozData();
-  aktualizujElementHry(index);
+  aktualizujZobrazeniHry(index);
+  ulozData();
 }
 
 async function oznacZahrano(index) {
   hry[index].zahrano += 1;
-  await ulozData();
-  aktualizujElementHry(index);
+  aktualizujZobrazeniHry(index);
+  ulozData();
 }
 
-function aktualizujElementHry(index) {
+function aktualizujZobrazeniHry(index) {
   const hra = hry[index];
-  const vsechnyDivy = document.querySelectorAll(".hra, .top-hra");
 
-  vsechnyDivy.forEach(div => {
-    if (div.querySelector("h3")?.textContent?.includes(hra.nazev)) {
-      const p = div.querySelector("p:nth-of-type(4)");
-      if (p) {
-        p.innerHTML = `👍 ${hra.libi} | 👎 ${hra.nelibi} | ✅ ${hra.zahrano}`;
+  // Najdi všechny divy (v top3 i v hlavním seznamu), které mají danou hru podle názvu
+  const divy = document.querySelectorAll(".hra, .top-hra");
+  divy.forEach(div => {
+    const h3 = div.querySelector("h3");
+    if (!h3) return;
+
+    // Porovnáme podle názvu - ať funguje i v top3, kde je label navíc
+    if (h3.textContent.includes(hra.nazev)) {
+      const p = div.querySelectorAll("p");
+      if (p.length >= 4) {
+        p[3].innerHTML = `👍 ${hra.libi} | 👎 ${hra.nelibi} | ✅ ${hra.zahrano}`;
       }
     }
   });
