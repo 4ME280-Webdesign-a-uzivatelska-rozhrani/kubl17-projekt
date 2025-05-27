@@ -67,7 +67,8 @@ function filtrujHry() {
   }
   // odstraněno filtrování podle hraciMax
   if (!isNaN(posledniFiltry.casMax)) {
-    filtrovane = filtrovane.filter(hra => hra.cas_max <= posledniFiltry.casMax);
+    filtrovane = filtrovane.filter(hra => hra.cas_min <= posledniFiltry.casMax);
+
   }
 
   return filtrovane;
