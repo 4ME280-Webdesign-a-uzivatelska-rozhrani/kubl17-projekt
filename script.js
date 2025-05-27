@@ -40,6 +40,59 @@ function naplnTypyHerDropdown() {
   });
 }
 
+
+
+function zobrazTop3(top3) {
+  const top3Container = document.getElementById("top3");
+  if (!top3Container) return;
+  top3Container.innerHTML = "";
+
+  const labels = ["TOP favorit", "Zahraj si mě prosím", "Náhodná výzva"];
+  const cssTridy = ["top-favorit", "top-zahraj", "top-nahodna"];
+
+  top3.forEach((hra, i) => {
+    const div = document.createElement("div");
+    div.className = `top-hra ${cssTridy[i] || ""}`;
+    div.innerHTML = `
+      <h3>${hra.nazev} <span class="top-label">${labels[i]}</span></h3>
+      <p>Typ: ${hra.typ}</p>
+      <p>Počet hráčů: ${hra.hraci_min}–${hra.hraci_max}</p>
+      <p>Čas: ${hra.cas_min}–${hra.cas_max} min</p>
+      <p>👍 ${hra.libi} | 👎 ${hra.nelibi} | ✅ ${hra.zahrano}</p>
+      <button onclick="oznacLibi(${getHraIndex(hra)})">👍 Líbí</button>
+      <button onclick="oznacNelibi(${getHraIndex(hra)})">👎 Nelíbí</button>
+      <button onclick="oznacZahrano(${getHraIndex(hra)})">✅ Zahrané</button>
+    `;
+    top3Container.appendChild(div);
+  });
+}
+
+
+function zobrazHryBezTop3(hryData, top3) {
+  const seznam = document.getElementById("seznam-her");
+  if (!seznam) return;
+  seznam.innerHTML = "";
+
+  const topNazvy = top3.map(h => h.nazev);
+  const ostatniHry = hryData.filter(hra => !topNazvy.includes(hra.nazev));
+
+  ostatniHry.forEach((hra) => {
+    const hraDiv = document.createElement("div");
+    hraDiv.className = "hra";
+    hraDiv.innerHTML = `
+      <h3>${hra.nazev}</h3>
+      <p>Typ: ${hra.typ}</p>
+      <p>Počet hráčů: ${hra.hraci_min}–${hra.hraci_max}</p>
+      <p>Čas: ${hra.cas_min}–${hra.cas_max} min</p>
+      <p>👍 ${hra.libi} | 👎 ${hra.nelibi} | ✅ ${hra.zahrano}</p>
+      <button onclick="oznacLibi(${getHraIndex(hra)})">👍 Líbí</button>
+      <button onclick="oznacNelibi(${getHraIndex(hra)})">👎 Nelíbí</button>
+      <button onclick="oznacZahrano(${getHraIndex(hra)})">✅ Zahrané</button>
+    `;
+    seznam.appendChild(hraDiv);
+  });
+}
+
 function getTop3Hry(hryData) {
   const top3 = [];
 
@@ -62,61 +115,6 @@ function getTop3Hry(hryData) {
 
   return top3;
 }
-
-function zobrazTop3(hryData) {
-  const top3Container = document.getElementById("top3");
-  if (!top3Container) return;
-  top3Container.innerHTML = "";
-
-  const top3 = getTop3Hry(hryData);
-  const labels = ["TOP favorit", "Zahraj si mě prosím", "Náhodná výzva"];
-  const cssTridy = ["top-favorit", "top-zahraj", "top-nahodna"];
-
-  top3.forEach((hra, i) => {
-    const div = document.createElement("div");
-    div.className = `top-hra ${cssTridy[i] || ""}`;
-    div.innerHTML = `
-      <h3>${hra.nazev} <span class="top-label">${labels[i]}</span></h3>
-      <p>Typ: ${hra.typ}</p>
-      <p>Počet hráčů: ${hra.hraci_min}–${hra.hraci_max}</p>
-      <p>Čas: ${hra.cas_min}–${hra.cas_max} min</p>
-      <p>👍 ${hra.libi} | 👎 ${hra.nelibi} | ✅ ${hra.zahrano}</p>
-      <button onclick="oznacLibi(${getHraIndex(hra)})">👍 Líbí</button>
-      <button onclick="oznacNelibi(${getHraIndex(hra)})">👎 Nelíbí</button>
-      <button onclick="oznacZahrano(${getHraIndex(hra)})">✅ Zahrané</button>
-    `;
-    top3Container.appendChild(div);
-  });
-}
-
-
-function zobrazHryBezTop3(hryData) {
-  const seznam = document.getElementById("seznam-her");
-  if (!seznam) return;
-  seznam.innerHTML = "";
-
-  const top3 = getTop3Hry(hryData);
-  const topNazvy = top3.map(h => h.nazev);
-
-  const ostatniHry = hryData.filter(hra => !topNazvy.includes(hra.nazev));
-
-  ostatniHry.forEach((hra) => {
-    const hraDiv = document.createElement("div");
-    hraDiv.className = "hra";
-    hraDiv.innerHTML = `
-      <h3>${hra.nazev}</h3>
-      <p>Typ: ${hra.typ}</p>
-      <p>Počet hráčů: ${hra.hraci_min}–${hra.hraci_max}</p>
-      <p>Čas: ${hra.cas_min}–${hra.cas_max} min</p>
-      <p>👍 ${hra.libi} | 👎 ${hra.nelibi} | ✅ ${hra.zahrano}</p>
-      <button onclick="oznacLibi(${getHraIndex(hra)})">👍 Líbí</button>
-      <button onclick="oznacNelibi(${getHraIndex(hra)})">👎 Nelíbí</button>
-      <button onclick="oznacZahrano(${getHraIndex(hra)})">✅ Zahrané</button>
-    `;
-    seznam.appendChild(hraDiv);
-  });
-}
-
 
 
 
@@ -203,9 +201,11 @@ function aktualizujZobrazeniHry(index) {
 
 function obnovZobrazeni() {
   const filtrovane = filtrujHry();
-  zobrazTop3(filtrovane);
-  zobrazHryBezTop3(filtrovane);
+  const top3 = getTop3Hry(filtrovane);
+  zobrazTop3(top3);
+  zobrazHryBezTop3(filtrovane, top3);
 }
+
 
 async function ulozData() {
   try {
