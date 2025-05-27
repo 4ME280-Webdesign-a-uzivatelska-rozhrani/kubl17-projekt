@@ -89,7 +89,7 @@ function zobrazTop3(hryData) {
   // Vyhneme se opakování v top3 (unikátní hry)
   let top3Unikatni = [];
   [topLibi, topZahrano, nahodna].forEach(hra => {
-    if (!top3Unikatni.includes(hra)) top3Unikatni.push(hra);
+    if (!top3Unikatni.some(h => h.nazev === hra.nazev)) top3Unikatni.push(hra);
   });
 
   const labels = ["TOP favorit", "Zahraj si mě prosím", "Náhodná výzva"];
@@ -97,10 +97,8 @@ function zobrazTop3(hryData) {
 
   top3Unikatni.forEach((hra, i) => {
     const div = document.createElement("div");
-    // Pokud máme méně než 3 unikátní hry, přiřadíme třídu odpovídající indexu i (0,1,2)
-    // Pro jistotu použijeme modulo, aby nedošlo k chybě (v extrémním případě)
     const trida = cssTridy[i % cssTridy.length];
-    div.className = `top-hra ${trida}`;
+    div.className = `top-hra ${trida}`;  // Přidání barvy podle pořadí
     div.innerHTML = `
       <h3>${hra.nazev} <span class="top-label">${labels[i]}</span></h3>
       <p>Typ: ${hra.typ}</p>
@@ -114,6 +112,7 @@ function zobrazTop3(hryData) {
     top3Container.appendChild(div);
   });
 }
+
 
 
 function getTop3Hry(hryData) {
