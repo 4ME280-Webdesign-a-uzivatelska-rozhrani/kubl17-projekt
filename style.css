@@ -13,28 +13,20 @@ body {
   color: #222;
 }
 .top-favorit {
-  background-color: #ffd700; /* zlatá */
-  color: #3a2e00;
-  padding: 1em;
-  margin-bottom: 1em;
-  border-radius: 8px;
+  background-color: #ffd700 !important; /* zlatá */
+  color: #3a2e00 !important;
 }
 
 .top-zahraj {
-  background-color: #d4edda; /* světle zelená */
-  color: #155724;
-  padding: 1em;
-  margin-bottom: 1em;
-  border-radius: 8px;
+  background-color: #d4edda !important; /* světle zelená */
+  color: #155724 !important;
 }
 
 .top-nahodna {
-  background-color: #d6c5f7; /* světle fialová */
-  color: #3a1f6e;
-  padding: 1em;
-  margin-bottom: 1em;
-  border-radius: 8px;
+  background-color: #d6c5f7 !important; /* světle fialová */
+  color: #3a1f6e !important;
 }
+
 
 .top-label {
   font-weight: bold;
