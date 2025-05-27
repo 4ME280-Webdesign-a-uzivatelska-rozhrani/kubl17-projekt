@@ -3,7 +3,6 @@ let hry = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
   await nactiData();
-  zobrazHry(hry);
   nastavFiltraci();
 });
 
@@ -18,7 +17,6 @@ async function nactiData() {
     console.error("Chyba při načítání dat:", error);
   }
 }
-
 
 function zobrazHry(hryData) {
   const seznam = document.getElementById("seznam-her");
@@ -102,4 +100,33 @@ async function ulozData() {
   } catch (error) {
     console.error("Chyba při ukládání dat:", error);
   }
+}
+
+// Přidej funkci zobrazTop3 pokud ji ještě nemáš:
+function zobrazTop3(hryData) {
+  const topDiv = document.getElementById("doporučene-hry");
+  if (!topDiv) return;
+
+  // 1. Nejvíce líbí
+  const nejviceLibi = [...hryData].sort((a, b) => b.libi - a.libi)[0];
+  // 2. Nej méně zahrané
+  const nejmeneZahrane = [...hryData].sort((a, b) => a.zahrano - b.zahrano)[0];
+  // 3. Náhodná hra
+  const nahodna = hryData[Math.floor(Math.random() * hryData.length)];
+
+  topDiv.innerHTML = `
+    <h2>Doporučené hry</h2>
+    <div>
+      <h3>Nejvíce líbí</h3>
+      <p>${nejviceLibi.nazev}</p>
+    </div>
+    <div>
+      <h3>Nejméně zahrané</h3>
+      <p>${nejmeneZahrane.nazev}</p>
+    </div>
+    <div>
+      <h3>Náhodná hra</h3>
+      <p>${nahodna.nazev}</p>
+    </div>
+  `;
 }
