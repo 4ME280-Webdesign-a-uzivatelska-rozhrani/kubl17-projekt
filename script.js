@@ -173,23 +173,26 @@ function nastavFiltraci() {
 async function oznacLibi(index) {
   hry[index].libi += 1;
   await ulozData();
+  await nactiData();
   obnovPoKliknuti();
 }
 
 async function oznacNelibi(index) {
   hry[index].nelibi += 1;
   await ulozData();
+  await nactiData();
   obnovPoKliknuti();
 }
 
 async function oznacZahrano(index) {
   hry[index].zahrano += 1;
   await ulozData();
+  await nactiData();
   obnovPoKliknuti();
 }
 
+
 function obnovPoKliknuti() {
-  // Znovu aplikuj filtr z aktuálních hodnot formuláře
   const typ = document.getElementById("filtr-typ").value;
   const hraciMin = parseInt(document.getElementById("filtr-hraci-min").value);
   const hraciMax = parseInt(document.getElementById("filtr-hraci-max").value);
@@ -211,6 +214,7 @@ function obnovPoKliknuti() {
   }
 
   aktualniFiltrovane = filtrovane;
+
   zobrazTop3(filtrovane);
   zobrazHryBezTop3(filtrovane);
 }
