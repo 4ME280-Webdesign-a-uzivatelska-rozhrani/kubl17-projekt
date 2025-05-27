@@ -52,7 +52,7 @@ body {
 }
 
 /* Každá hra */
-.hra, .top-hra {
+.hra, {
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
@@ -61,14 +61,14 @@ body {
 }
 
 /* Hlavička hry */
-.hra h3, .top-hra h3 {
+.hra h3, h3 {
   margin: 0 0 8px 0;
   font-size: 1.3em;
   color: #2c3e50;
 }
 
 /* Popisky */
-.hra p, .top-hra p {
+.hra p, p {
   margin: 4px 0;
   color: #555;
 }
