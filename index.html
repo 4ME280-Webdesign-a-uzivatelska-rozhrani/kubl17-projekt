@@ -4,34 +4,55 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Seznam her</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 10px;
+    }
+    .hra {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+    }
+    button {
+      margin-right: 5px;
+    }
+    form > label {
+      margin-right: 5px;
+    }
+    form > * {
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
 
-<h1>Seznam her</h1>
+  <h1>Seznam her doma</h1>
 
-<!-- Filtry -->
-<div id="filtry">
-  <label for="typ">Druh hry:</label>
-  <select id="typ" onchange="filtruj()">
-    <option value="">Všechny</option>
-    <option value="karetní">Karetní</option>
-    <option value="desková">Desková</option>
-  </select>
+  <form id="filtr-form">
+    <label for="filtr-typ">Typ hry:</label>
+    <select id="filtr-typ" name="typ">
+      <option value="">Vše</option>
+      <option value="karetní">Karetní</option>
+      <option value="deskové">Deskové</option>
+      <!-- přidej další typy podle seznamu her -->
+    </select>
 
-  <label for="hraci">Min. počet hráčů:</label>
-  <input id="hraci" type="number" min="1" placeholder="Např. 2" onchange="filtruj()">
+    <label for="filtr-hraci">Počet hráčů:</label>
+    <input type="number" id="filtr-hraci" name="hraci" min="1" />
 
-  <label for="cas">Maximální délka (min):</label>
-  <input id="cas" type="number" min="1" placeholder="Např. 30" onchange="filtruj()">
-</div>
+    <label for="filtr-cas">Max. čas (min):</label>
+    <input type="number" id="filtr-cas" name="cas" min="1" />
 
-<!-- Seznam her -->
-<ul id="seznam"></ul>
+    <button type="submit">Filtrovat</button>
+  </form>
 
-<h2>Top 3 hry</h2>
-<ul id="top3"></ul>
+  <div id="seznam-her"></div>
 
-<script src="script.js"></script>
+  <script src="script.js"></script>
 
 </body>
 </html>
