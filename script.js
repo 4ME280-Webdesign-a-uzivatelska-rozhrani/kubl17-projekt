@@ -97,7 +97,10 @@ function zobrazTop3(hryData) {
 
   top3Unikatni.forEach((hra, i) => {
     const div = document.createElement("div");
-    div.className = `top-hra ${cssTridy[i]}`;
+    // Pokud máme méně než 3 unikátní hry, přiřadíme třídu odpovídající indexu i (0,1,2)
+    // Pro jistotu použijeme modulo, aby nedošlo k chybě (v extrémním případě)
+    const trida = cssTridy[i % cssTridy.length];
+    div.className = `top-hra ${trida}`;
     div.innerHTML = `
       <h3>${hra.nazev} <span class="top-label">${labels[i]}</span></h3>
       <p>Typ: ${hra.typ}</p>
@@ -111,6 +114,7 @@ function zobrazTop3(hryData) {
     top3Container.appendChild(div);
   });
 }
+
 
 function getTop3Hry(hryData) {
   if (hryData.length === 0) return [];
