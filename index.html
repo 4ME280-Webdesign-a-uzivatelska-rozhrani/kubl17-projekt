@@ -33,15 +33,11 @@
   <h1>Seznam her doma</h1>
 
   <form id="filtr-form">
-  <select id="filtr-typ"></select>
-  <input type="number" id="filtr-hraci-max" placeholder="Max hráčů">
-  <input type="number" id="filtr-cas-max" placeholder="Max minut">
-  <button type="submit">Filtrovat</button>
-</form>
-
-<div id="top3"></div>
-<div id="seznam-her"></div>
-
+   <label for="filtr-typ">Typ hry:</label>
+<select id="filtr-typ" name="typ">
+  <option value="">Vše</option>
+  <!-- Typy her doplníme JS -->
+</select>
 
 
     <label for="filtr-hraci">Počet hráčů:</label>
