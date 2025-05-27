@@ -1,7 +1,6 @@
 const API_URL = "https://kubl17-projekt.kubl17.workers.dev";
 let hry = [];
 
-// Načti hry z JSONBin přes proxy
 async function nactiData() {
   try {
     const res = await fetch(API_URL);
@@ -15,7 +14,6 @@ async function nactiData() {
 }
 nactiData();
 
-// Zobraz hry v seznamu
 function zobrazHry(seznam) {
   const ul = document.getElementById("seznam");
   ul.innerHTML = "";
@@ -33,7 +31,6 @@ function zobrazHry(seznam) {
   });
 }
 
-// Filtrace podle formuláře
 function filtruj() {
   const typ = document.getElementById("typ").value;
   const hraci = parseInt(document.getElementById("hraci").value);
@@ -49,7 +46,6 @@ function filtruj() {
   zobrazTop3(filtrovane);
 }
 
-// Označení hry (líbí / nelíbí / zahráno)
 function ohodnot(index, typHodnoceni) {
   hry[index][typHodnoceni]++;
   ulozData();
@@ -57,7 +53,6 @@ function ohodnot(index, typHodnoceni) {
   zobrazTop3(hry);
 }
 
-// Uložení aktualizovaného JSONu do JSONBin přes proxy
 async function ulozData() {
   try {
     await fetch(API_URL, {
@@ -70,7 +65,6 @@ async function ulozData() {
   }
 }
 
-// Zobraz top 3 hry podle kritérií
 function zobrazTop3(seznam) {
   const ul = document.getElementById("top3");
   ul.innerHTML = "";
@@ -83,7 +77,7 @@ function zobrazTop3(seznam) {
 
   const vyber = [podleLibenosti, nejmeneZahrana, nahodna];
 
-  const nazvy = new Set(); // zabrání duplicitám
+  const nazvy = new Set();
   vyber.forEach(hra => {
     if (!nazvy.has(hra.nazev)) {
       const li = document.createElement("li");
