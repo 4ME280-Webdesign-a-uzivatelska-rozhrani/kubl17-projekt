@@ -12,67 +12,33 @@ async function nactiData() {
     const res = await fetch(API_URL);
     const data = await res.json();
     hry = data.record.hry;
-
-    // Zavoláme filtrování s defaultními hodnotami (vše)
-    zobrazHry(hry, {}); // aby se zobrazilo normálně, bez top štítků
-
-    // Nebo můžeme rovnou zavolat filtrovací funkci s prázdným filtrem (pokud chceš, aby se rovnou zobrazily TOP 3)
-    // simulace filtrování:
-    const topOblibena = hry.reduce((max, hra) => hra.libi > (max?.libi ?? -1) ? hra : max, null);
-    const topZahraj = hry.reduce((min, hra) => hra.zahrano < (min?.zahrano ?? Infinity) ? hra : min, null);
-    const ostatni = hry.filter(h => h !== topOblibena && h !== topZahraj);
-    const topNahodna = ostatni.length > 0 ? ostatni[Math.floor(Math.random() * ostatni.length)] : null;
-
-    let novePoradi = [];
-    if (topOblibena) novePoradi.push(topOblibena);
-    if (topZahraj && topZahraj !== topOblibena) novePoradi.push(topZahraj);
-    if (topNahodna && topNahodna !== topOblibena && topNahodna !== topZahraj) novePoradi.push(topNahodna);
-
-    hry.forEach(hra => {
-      if (!novePoradi.includes(hra)) novePoradi.push(hra);
-    });
-
-    zobrazHry(novePoradi, { topOblibena, topZahraj, topNahodna });
+    zobrazHry(hry);
+    zobrazTop3(hry); // Pokud chceš, můžeš volat i tady, ale není nutné.
   } catch (error) {
     console.error("Chyba při načítání dat:", error);
   }
 }
 
-
-function naplnFiltrTypy(hryData) {
-  const selectTyp = document.getElementById("filtr-typ");
-
-  // získáme unikátní typy her
-  const typy = [...new Set(hryData.map(hra => hra.typ))].sort();
-
-  // přidáme každý typ jako option
-  typy.forEach(typ => {
-    const option = document.createElement("option");
-    option.value = typ;
-    option.textContent = typ.charAt(0).toUpperCase() + typ.slice(1);
-    selectTyp.appendChild(option);
-  });
-}
-
-function zobrazHry(hryData, topObj = {}) {
+function zobrazHry(hryData) {
   const seznam = document.getElementById("seznam-her");
   seznam.innerHTML = "";
 
   hryData.forEach((hra, index) => {
+    // Připravíme značku pro TOP 3
+    let topText = "";
+    if (hra._topTag) {
+      topText = `<div class="top-tag">${hra._topTag}</div>`;
+    }
+
     const hraDiv = document.createElement("div");
     hraDiv.className = "hra";
 
-    // Rozpoznání, jestli je hra v TOP 3
-    let specialLabel = "";
-    if (topObj.topOblibena === hra) specialLabel = '<span class="top-label">TOP favorit</span>';
-    else if (topObj.topZahraj === hra) specialLabel = '<span class="top-label">Zahraj si mě prosím</span>';
-    else if (topObj.topNahodna === hra) specialLabel = '<span class="top-label">Náhodná výzva</span>';
-
     hraDiv.innerHTML = `
-      <h3>${hra.nazev} ${specialLabel}</h3>
+      <h3>${hra.nazev}</h3>
+      ${topText}
       <p>Typ: ${hra.typ}</p>
-      <p>Počet hráčů: ${hra.hraci_min} - ${hra.hraci_max}</p>
-      <p>Čas: ${hra.cas_min} - ${hra.cas_max} min</p>
+      <p>Počet hráčů: ${hra.hraci_min}–${hra.hraci_max}</p>
+      <p>Čas: ${hra.cas_min}–${hra.cas_max} min</p>
       <p>👍 ${hra.libi} | 👎 ${hra.nelibi} | ✅ ${hra.zahrano}</p>
       <button onclick="oznacLibi(${index})">👍 Líbí</button>
       <button onclick="oznacNelibi(${index})">👎 Nelíbí</button>
@@ -83,12 +49,12 @@ function zobrazHry(hryData, topObj = {}) {
   });
 }
 
-
 function nastavFiltraci() {
   const formular = document.getElementById("filtr-form");
 
   formular.addEventListener("submit", (e) => {
     e.preventDefault();
+
     const typ = document.getElementById("filtr-typ").value;
     const hraci = parseInt(document.getElementById("filtr-hraci").value);
     const cas = parseInt(document.getElementById("filtr-cas").value);
@@ -97,37 +63,60 @@ function nastavFiltraci() {
 
     if (typ && typ !== "vse") filtrovane = filtrovane.filter(hra => hra.typ === typ);
     if (!isNaN(hraci)) filtrovane = filtrovane.filter(hra => hra.hraci_min <= hraci && hra.hraci_max >= hraci);
-    if (!isNaN(cas)) filtrovane = filtrovane.filter(hra => hra.cas_min <= cas && hra.cas_max >= cas);
+    if (!isNaN(cas)) filtrovane = filtrovane.filter(hra => hra.cas_max <= cas);
 
-    if (filtrovane.length === 0) {
-      zobrazHry([]);
-      zobrazTop3([]);
-      return;
-    }
+    // Připravíme TOP 3
+    const top3 = vyberTop3(filtrovane);
 
-    // 1. Nejčastěji označená jako oblíbená (max libi)
-    const topOblibena = filtrovane.reduce((max, hra) => hra.libi > (max?.libi ?? -1) ? hra : max, null);
-    // 2. Nejméně nehraná (min zahrano)
-    const topZahraj = filtrovane.reduce((min, hra) => hra.zahrano < (min?.zahrano ?? Infinity) ? hra : min, null);
-    // 3. Náhodná (mimo ty 2 výše)
-    const ostatni = filtrovane.filter(h => h !== topOblibena && h !== topZahraj);
-    const topNahodna = ostatni.length > 0 ? ostatni[Math.floor(Math.random() * ostatni.length)] : null;
+    // Odstraníme TOP 3 z filtrovane, aby se neopakovali
+    const top3Ids = new Set(top3.map(h => h.nazev));
+    const dalsi = filtrovane.filter(h => !top3Ids.has(h.nazev));
 
-    // Sestavujeme nový seznam s TOP 3 na začátku (bez duplicit)
-    let novePoradi = [];
-    if (topOblibena) novePoradi.push(topOblibena);
-    if (topZahraj && topZahraj !== topOblibena) novePoradi.push(topZahraj);
-    if (topNahodna && topNahodna !== topOblibena && topNahodna !== topZahraj) novePoradi.push(topNahodna);
+    // Sestavíme finální pole: top3 na začátek + zbytek
+    const finalniSeznam = [...top3, ...dalsi];
 
-    // Přidáme zbytek her, které nejsou v top 3
-    filtrovane.forEach(hra => {
-      if (!novePoradi.includes(hra)) novePoradi.push(hra);
-    });
-
-    zobrazHry(novePoradi, { topOblibena, topZahraj, topNahodna });
+    zobrazHry(finalniSeznam);
   });
 }
 
+// Funkce pro výběr TOP 3 her s označením
+function vyberTop3(hryPole) {
+  if (hryPole.length === 0) return [];
+
+  // 1. Nejčastěji označená jako oblíbená (libi nejvíc)
+  const topLibi = hryPole.reduce((max, hra) => (hra.libi > (max?.libi ?? -1) ? hra : max), null);
+
+  // 2. Nejmenší počet zahrano (minimálně zahrané)
+  const topZahrano = hryPole.reduce((min, hra) => (hra.zahrano < (min?.zahrano ?? Infinity) ? hra : min), null);
+
+  // 3. Náhodná
+  let nahodna;
+  if (hryPole.length === 1) {
+    nahodna = hryPole[0];
+  } else {
+    do {
+      nahodna = hryPole[Math.floor(Math.random() * hryPole.length)];
+    } while (nahodna.nazev === topLibi.nazev || nahodna.nazev === topZahrano.nazev);
+  }
+
+  // Přidej vlastnost _topTag pro zobrazení štítku
+  if (topLibi) topLibi._topTag = "TOP favorit";
+  if (topZahrano) topZahrano._topTag = "Zahraj si mě prosím";
+  if (nahodna) nahodna._topTag = "Náhodná výzva";
+
+  // Odstranit duplikáty pokud se některá hra shoduje (může se stát, když má jen pár her)
+  const unikaty = [];
+  const nazvy = new Set();
+
+  [topLibi, topZahrano, nahodna].forEach(hra => {
+    if (hra && !nazvy.has(hra.nazev)) {
+      unikaty.push(hra);
+      nazvy.add(hra.nazev);
+    }
+  });
+
+  return unikaty;
+}
 
 function oznacLibi(index) {
   hry[index].libi += 1;
@@ -152,14 +141,9 @@ async function ulozData() {
     await fetch(API_URL, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ hry })
+      body: JSON.stringify({ hry }),
     });
   } catch (error) {
     console.error("Chyba při ukládání dat:", error);
   }
-}
-
-function zobrazTop3(hryData) {
-  // Implementace top 3 her (podle líbí, méně hrané, náhodné)
-  // Můžeš doplnit podle potřeby
 }
