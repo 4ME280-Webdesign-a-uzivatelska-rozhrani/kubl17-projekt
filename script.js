@@ -40,41 +40,39 @@ function naplnTypyHerDropdown() {
   });
 }
 
+function getTop3Hry(hryData) {
+  const top3 = [];
+
+  if (hryData.length === 0) return top3;
+
+  const sortedLibi = [...hryData].sort((a, b) => b.libi - a.libi);
+  const topLibi = sortedLibi[0];
+  top3.push(topLibi);
+
+  const sortedZahrano = [...hryData].sort((a, b) => b.zahrano - a.zahrano);
+  const topZahrano = sortedZahrano.find(h => h.nazev !== topLibi.nazev);
+  if (topZahrano) top3.push(topZahrano);
+
+  const excludedNames = top3.map(h => h.nazev);
+  const zbytek = hryData.filter(h => !excludedNames.includes(h.nazev));
+  if (zbytek.length > 0) {
+    const nahodna = zbytek[Math.floor(Math.random() * zbytek.length)];
+    top3.push(nahodna);
+  }
+
+  return top3;
+}
+
 function zobrazTop3(hryData) {
   const top3Container = document.getElementById("top3");
   if (!top3Container) return;
   top3Container.innerHTML = "";
 
-  if (hryData.length === 0) return;
-
-  // 1) Vybereme topLibi - nejvíce "libi"
-  const topLibi = [...hryData].sort((a, b) => b.libi - a.libi)[0];
-
-  // 2) Vybereme topZahrano - nejvíce "zahrano"
-  const topZahrano = [...hryData].sort((a, b) => b.zahrano - a.zahrano)[0];
-
-  // 3) Připravíme unikátní seznam (pro jistotu)
-  let top3Unikatni = [];
-  if (topLibi) top3Unikatni.push(topLibi);
-  if (topZahrano && !top3Unikatni.some(h => h.nazev === topZahrano.nazev)) {
-    top3Unikatni.push(topZahrano);
-  }
-
-  // 4) Vybereme náhodnou hru mimo topLibi a topZahrano
-  const zbyleHry = hryData.filter(h => !top3Unikatni.some(th => th.nazev === h.nazev));
-  let nahodna = null;
-  if (zbyleHry.length > 0) {
-    nahodna = zbyleHry[Math.floor(Math.random() * zbyleHry.length)];
-    top3Unikatni.push(nahodna);
-  }
-
-  // Pokud máme méně než 3 hry (např. jen 2), top3Unikatni bude kratší.
-
-  // 5) Vykreslíme top3 hry
+  const top3 = getTop3Hry(hryData);
   const labels = ["TOP favorit", "Zahraj si mě prosím", "Náhodná výzva"];
   const cssTridy = ["top-favorit", "top-zahraj", "top-nahodna"];
 
-  top3Unikatni.forEach((hra, i) => {
+  top3.forEach((hra, i) => {
     const div = document.createElement("div");
     div.className = `top-hra ${cssTridy[i] || ""}`;
     div.innerHTML = `
@@ -91,21 +89,20 @@ function zobrazTop3(hryData) {
   });
 }
 
+
 function zobrazHryBezTop3(hryData) {
   const seznam = document.getElementById("seznam-her");
   if (!seznam) return;
   seznam.innerHTML = "";
 
-  // 1) Získáme top3 hry podle filtru, aby se odfiltrovaly
-  const top3Hry = getTop3Hry(hryData);
+  const top3 = getTop3Hry(hryData);
+  const topNazvy = top3.map(h => h.nazev);
 
-  // 2) Odstraníme hry, které jsou v top3 ze zobrazení v seznamu
-  const hryKZobrazeni = hryData.filter(hra => !top3Hry.some(topHra => topHra.nazev === hra.nazev));
+  const ostatniHry = hryData.filter(hra => !topNazvy.includes(hra.nazev));
 
-  hryKZobrazeni.forEach((hra) => {
+  ostatniHry.forEach((hra) => {
     const hraDiv = document.createElement("div");
     hraDiv.className = "hra";
-
     hraDiv.innerHTML = `
       <h3>${hra.nazev}</h3>
       <p>Typ: ${hra.typ}</p>
@@ -116,29 +113,11 @@ function zobrazHryBezTop3(hryData) {
       <button onclick="oznacNelibi(${getHraIndex(hra)})">👎 Nelíbí</button>
       <button onclick="oznacZahrano(${getHraIndex(hra)})">✅ Zahrané</button>
     `;
-
     seznam.appendChild(hraDiv);
   });
 }
 
-function getTop3Hry(hryData) {
-  if (hryData.length === 0) return [];
 
-  const topLibi = [...hryData].sort((a, b) => b.libi - a.libi)[0];
-  const topZahrano = [...hryData].sort((a, b) => b.zahrano - a.zahrano)[0];
-  let top3 = [];
-
-  if (topLibi) top3.push(topLibi);
-  if (topZahrano && !top3.some(h => h.nazev === topZahrano.nazev)) top3.push(topZahrano);
-
-  const zbyleHry = hryData.filter(h => !top3.some(th => th.nazev === h.nazev));
-  if (zbyleHry.length > 0) {
-    const nahodna = zbyleHry[Math.floor(Math.random() * zbyleHry.length)];
-    if (nahodna) top3.push(nahodna);
-  }
-
-  return top3;
-}
 
 
 function getHraIndex(hra) {
