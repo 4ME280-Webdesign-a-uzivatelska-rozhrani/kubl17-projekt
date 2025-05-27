@@ -3,6 +3,7 @@ let hry = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
   await nactiData();
+  zobrazHry(hry);
   nastavFiltraci();
 });
 
@@ -11,24 +12,28 @@ async function nactiData() {
     const res = await fetch(API_URL);
     const data = await res.json();
     hry = data.record.hry;
+
+    naplnFiltrTypy(hry);    // doplníme typy her do filtru
     zobrazHry(hry);
     zobrazTop3(hry);
   } catch (error) {
     console.error("Chyba při načítání dat:", error);
   }
 }
-async function nactiData() {
-  try {
-    const res = await fetch(API_URL);
-    const data = await res.json();
-    hry = data.record.hry;
 
-    naplnFiltrTypy(hry);      // tady doplníš typy do selectu
-    zobrazHry(hry);
-    zobrazTop3(hry);
-  } catch (error) {
-    console.error("Chyba při načítání dat:", error);
-  }
+function naplnFiltrTypy(hryData) {
+  const selectTyp = document.getElementById("filtr-typ");
+
+  // získáme unikátní typy her
+  const typy = [...new Set(hryData.map(hra => hra.typ))].sort();
+
+  // přidáme každý typ jako option
+  typy.forEach(typ => {
+    const option = document.createElement("option");
+    option.value = typ;
+    option.textContent = typ.charAt(0).toUpperCase() + typ.slice(1);
+    selectTyp.appendChild(option);
+  });
 }
 
 function zobrazHry(hryData) {
@@ -51,20 +56,6 @@ function zobrazHry(hryData) {
     `;
 
     seznam.appendChild(hraDiv);
-  });
-}
-function naplnFiltrTypy(hryData) {
-  const selectTyp = document.getElementById("filtr-typ");
-
-  // získáme unikátní typy her
-  const typy = [...new Set(hryData.map(hra => hra.typ))].sort();
-
-  // přidáme každý typ jako option
-  typy.forEach(typ => {
-    const option = document.createElement("option");
-    option.value = typ;
-    option.textContent = typ.charAt(0).toUpperCase() + typ.slice(1); // velké písmeno na začátku
-    selectTyp.appendChild(option);
   });
 }
 
@@ -129,31 +120,7 @@ async function ulozData() {
   }
 }
 
-// Přidej funkci zobrazTop3 pokud ji ještě nemáš:
 function zobrazTop3(hryData) {
-  const topDiv = document.getElementById("doporučene-hry");
-  if (!topDiv) return;
-
-  // 1. Nejvíce líbí
-  const nejviceLibi = [...hryData].sort((a, b) => b.libi - a.libi)[0];
-  // 2. Nej méně zahrané
-  const nejmeneZahrane = [...hryData].sort((a, b) => a.zahrano - b.zahrano)[0];
-  // 3. Náhodná hra
-  const nahodna = hryData[Math.floor(Math.random() * hryData.length)];
-
-  topDiv.innerHTML = `
-    <h2>Doporučené hry</h2>
-    <div>
-      <h3>Nejvíce líbí</h3>
-      <p>${nejviceLibi.nazev}</p>
-    </div>
-    <div>
-      <h3>Nejméně zahrané</h3>
-      <p>${nejmeneZahrane.nazev}</p>
-    </div>
-    <div>
-      <h3>Náhodná hra</h3>
-      <p>${nahodna.nazev}</p>
-    </div>
-  `;
+  // Implementace top 3 her (podle líbí, méně hrané, náhodné)
+  // Můžeš doplnit podle potřeby
 }
