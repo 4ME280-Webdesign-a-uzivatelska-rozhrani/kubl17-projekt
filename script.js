@@ -40,6 +40,20 @@ function zobrazHry(hryData) {
     seznam.appendChild(hraDiv);
   });
 }
+function naplnFiltrTypy(hryData) {
+  const selectTyp = document.getElementById("filtr-typ");
+
+  // získáme unikátní typy her
+  const typy = [...new Set(hryData.map(hra => hra.typ))].sort();
+
+  // přidáme každý typ jako option
+  typy.forEach(typ => {
+    const option = document.createElement("option");
+    option.value = typ;
+    option.textContent = typ.charAt(0).toUpperCase() + typ.slice(1); // velké písmeno na začátku
+    selectTyp.appendChild(option);
+  });
+}
 
 function nastavFiltraci() {
   const formular = document.getElementById("filtr-form");
