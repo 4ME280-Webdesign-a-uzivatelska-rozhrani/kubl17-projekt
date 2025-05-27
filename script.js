@@ -1,4 +1,3 @@
-const BIN_ID = "683562cb8561e97a501c0025";
 const API_URL = "https://kubl17-projekt.kubl17.workers.dev";
 let hry = [];
 
