@@ -10,9 +10,7 @@ let posledniFiltry = {
 document.addEventListener("DOMContentLoaded", async () => {
   await nactiData();
   naplnTypyHerDropdown();
-  zobrazTop3(hry);
-  zobrazHryBezTop3(hry);
-  nastavFiltraci();
+  obnovZobrazeni();
 });
 
 async function nactiData() {
@@ -40,8 +38,6 @@ function naplnTypyHerDropdown() {
   });
 }
 
-
-
 function zobrazTop3(top3) {
   const top3Container = document.getElementById("top3");
   if (!top3Container) return;
@@ -66,7 +62,6 @@ function zobrazTop3(top3) {
     top3Container.appendChild(div);
   });
 }
-
 
 function zobrazHryBezTop3(hryData, top3) {
   const seznam = document.getElementById("seznam-her");
@@ -104,7 +99,7 @@ function getTop3HryOnce(hryData) {
   const topLibi = kopie.shift();
   top3.push(topLibi);
 
-  // Nejvíce zahrané (odstraníme topLibi pokud byl zároveň)
+  // Nejvíce zahrané (ale jiná hra)
   kopie.sort((a, b) => b.zahrano - a.zahrano);
   const topZahrano = kopie.find(h => h.nazev !== topLibi.nazev);
   if (topZahrano) {
@@ -112,7 +107,7 @@ function getTop3HryOnce(hryData) {
     top3.push(topZahrano);
   }
 
-  // Náhodná zbylá hra
+  // Náhodná zbylá (odlišná od předchozích)
   if (kopie.length > 0) {
     const nahodna = kopie[Math.floor(Math.random() * kopie.length)];
     top3.push(nahodna);
@@ -120,8 +115,6 @@ function getTop3HryOnce(hryData) {
 
   return top3;
 }
-
-
 
 function getHraIndex(hra) {
   return hry.findIndex(h => h.nazev === hra.nazev);
@@ -167,6 +160,13 @@ function filtrujHry() {
   return filtrovane;
 }
 
+function obnovZobrazeni() {
+  const filtrovane = filtrujHry();
+  const top3 = getTop3HryOnce(filtrovane);
+  zobrazTop3(top3);
+  zobrazHryBezTop3(filtrovane, top3);
+}
+
 async function oznacLibi(index) {
   hry[index].libi += 1;
   aktualizujZobrazeniHry(index);
@@ -188,13 +188,11 @@ async function oznacZahrano(index) {
 function aktualizujZobrazeniHry(index) {
   const hra = hry[index];
 
-  // Najdi všechny divy (v top3 i v hlavním seznamu), které mají danou hru podle názvu
   const divy = document.querySelectorAll(".hra, .top-hra");
   divy.forEach(div => {
     const h3 = div.querySelector("h3");
     if (!h3) return;
 
-    // Porovnáme podle názvu - ať funguje i v top3, kde je label navíc
     if (h3.textContent.includes(hra.nazev)) {
       const p = div.querySelectorAll("p");
       if (p.length >= 4) {
@@ -203,15 +201,6 @@ function aktualizujZobrazeniHry(index) {
     }
   });
 }
-
-function obnovZobrazeni() {
-  const filtrovane = filtrujHry();
-  const top3 = getTop3HryOnce(filtrovane);
-  zobrazTop3(top3);
-  zobrazHryBezTop3(filtrovane, top3);
-}
-
-
 
 async function ulozData() {
   try {
