@@ -1,1 +1,41 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <title>Seznam her</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>🎲 Seznam her</h1>
+  
+  <div id="filtry">
+    <label>Typ:
+      <select id="typ">
+        <option value="">Vše</option>
+        <option value="karetní">Karetní</option>
+        <option value="desková">Desková</option>
+      </select>
+    </label>
+    <label>Hráči:
+      <input type="number" id="hraci" min="1" placeholder="Počet" />
+    </label>
+    <label>Max čas (minuty):
+      <input type="number" id="cas" min="1" placeholder="Čas" />
+    </label>
+    <button onclick="filtruj()">Filtrovat</button>
+  </div>
+
+  <div id="doporučení">
+    <h2>Doporučené hry</h2>
+    <ul id="top3"></ul>
+  </div>
+
+  <div id="vysledky">
+    <h2>Všechny hry</h2>
+    <ul id="seznam"></ul>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
 
