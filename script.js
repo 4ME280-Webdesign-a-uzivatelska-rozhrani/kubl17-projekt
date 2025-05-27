@@ -173,23 +173,21 @@ function nastavFiltraci() {
 async function oznacLibi(index) {
   hry[index].libi += 1;
   await ulozData();
-  await nactiData();
   obnovZobrazeni();
 }
 
 async function oznacNelibi(index) {
   hry[index].nelibi += 1;
   await ulozData();
-  await nactiData();
   obnovZobrazeni();
 }
 
 async function oznacZahrano(index) {
   hry[index].zahrano += 1;
   await ulozData();
-  await nactiData();
   obnovZobrazeni();
 }
+
 
 function obnovZobrazeni() {
   zobrazTop3(aktualniFiltrovane);
