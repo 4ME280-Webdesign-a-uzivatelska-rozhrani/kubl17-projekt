@@ -1,94 +1,110 @@
 const API_URL = "https://kubl17-projekt.kubl17.workers.dev";
 let hry = [];
 
+document.addEventListener("DOMContentLoaded", async () => {
+  await nactiData();
+  zobrazHry(hry);
+  nastavFiltraci();
+});
+
 async function nactiData() {
   try {
-    const res = await fetch(API_URL);
-    const data = await res.json();
-    hry = data.record.hry || [];
-    zobrazHry(hry);
-    zobrazTop3(hry);
-  } catch (err) {
-    console.error("Chyba při načítání dat:", err);
+    const response = await fetch(API_URL);
+    const data = await response.json();
+    hry = data.record.hry;
+  } catch (error) {
+    console.error("Chyba při načítání dat:", error);
   }
 }
-nactiData();
 
-function zobrazHry(seznam) {
-  const ul = document.getElementById("seznam");
-  ul.innerHTML = "";
-  seznam.forEach((hra, index) => {
-    const li = document.createElement("li");
-    li.innerHTML = `
-      <strong>${hra.nazev}</strong> (${hra.typ}, ${hra.hraci} hráčů, ${hra.cas} min)<br>
-      👍 ${hra.libi} | 👎 ${hra.nelibi} | 🕹️ ${hra.zahrano}
-      <br>
-      <button onclick="ohodnot(${index}, 'libi')">👍 Líbí</button>
-      <button onclick="ohodnot(${index}, 'nelibi')">👎 Nelíbí</button>
-      <button onclick="ohodnot(${index}, 'zahrano')">🕹️ Zahráno</button>
+function zobrazHry(hryData) {
+  const seznam = document.getElementById("seznam-her");
+  seznam.innerHTML = "";
+
+  hryData.forEach((hra, index) => {
+    const hraDiv = document.createElement("div");
+    hraDiv.className = "hra";
+
+    hraDiv.innerHTML = `
+      <h3>${hra.nazev}</h3>
+      <p>Typ: ${hra.typ}</p>
+      <p>Počet hráčů: ${hra.hraci}</p>
+      <p>Čas: ${hra.cas} min</p>
+      <p>👍 ${hra.libi} | 👎 ${hra.nelibi} | ✅ ${hra.zahrano}</p>
+      <button onclick="oznacLibi(${index})">👍 Líbí</button>
+      <button onclick="oznacNelibi(${index})">👎 Nelíbí</button>
+      <button onclick="oznacZahrano(${index})">✅ Zahrané</button>
     `;
-    ul.appendChild(li);
+
+    seznam.appendChild(hraDiv);
   });
 }
 
-function filtruj() {
-  const typ = document.getElementById("typ").value;
-  const hraci = parseInt(document.getElementById("hraci").value);
-  const cas = parseInt(document.getElementById("cas").value);
+function nastavFiltraci() {
+  const formular = document.getElementById("filtr-form");
 
-  let filtrovane = hry.filter(hra => {
-    return (!typ || hra.typ === typ) &&
-           (!hraci || hra.hraci >= hraci) &&
-           (!cas || hra.cas <= cas);
+  formular.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const typ = document.getElementById("filtr-typ").value;
+    const hraci = parseInt(document.getElementById("filtr-hraci").value);
+    const cas = parseInt(document.getElementById("filtr-cas").value);
+
+    let filtrovane = [...hry];
+
+    if (typ) filtrovane = filtrovane.filter(hra => hra.typ === typ);
+    if (!isNaN(hraci)) filtrovane = filtrovane.filter(hra => hra.hraci === hraci);
+    if (!isNaN(cas)) filtrovane = filtrovane.filter(hra => hra.cas <= cas);
+
+    // doporučení: nejvíce líbí → nejméně zahrané → náhodná
+    filtrovane.sort((a, b) => b.libi - a.libi || a.zahrano - b.zahrano);
+    const nahodna = filtrovane[Math.floor(Math.random() * filtrovane.length)];
+    if (nahodna) {
+      filtrovane = [
+        filtrovane[0],
+        filtrovane[1],
+        nahodna,
+        ...filtrovane.slice(2).filter(h => h !== nahodna),
+      ];
+    }
+
+    zobrazHry(filtrovane);
   });
-
-  zobrazHry(filtrovane);
-  zobrazTop3(filtrovane);
 }
 
-function ohodnot(index, typHodnoceni) {
-  hry[index][typHodnoceni]++;
+function oznacLibi(index) {
+  hry[index].libi += 1;
   ulozData();
   zobrazHry(hry);
-  zobrazTop3(hry);
+}
+
+function oznacNelibi(index) {
+  hry[index].nelibi += 1;
+  ulozData();
+  zobrazHry(hry);
+}
+
+function oznacZahrano(index) {
+  hry[index].zahrano += 1;
+  ulozData();
+  zobrazHry(hry);
 }
 
 async function ulozData() {
   try {
-    await fetch(API_URL, {
+    const response = await fetch(API_URL, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        record: { hry }  // celý objekt obalený do klíče "record"
+        record: { hry }
       })
     });
-  } catch (err) {
-    console.error("Chyba při ukládání dat:", err);
-  }
-}
 
-
-function zobrazTop3(seznam) {
-  const ul = document.getElementById("top3");
-  ul.innerHTML = "";
-
-  if (seznam.length === 0) return;
-
-  const podleLibenosti = [...seznam].sort((a, b) => b.libi - a.libi)[0];
-  const nejmeneZahrana = [...seznam].sort((a, b) => a.zahrano - b.zahrano)[0];
-  const nahodna = seznam[Math.floor(Math.random() * seznam.length)];
-
-  const vyber = [podleLibenosti, nejmeneZahrana, nahodna];
-
-  const nazvy = new Set();
-  vyber.forEach(hra => {
-    if (!nazvy.has(hra.nazev)) {
-      const li = document.createElement("li");
-      li.innerHTML = `<strong>${hra.nazev}</strong> (${hra.typ}, ${hra.hraci} hráčů, ${hra.cas} min)`;
-      ul.appendChild(li);
-      nazvy.add(hra.nazev);
+    if (!response.ok) {
+      console.error("Chyba při ukládání:", await response.text());
     }
-  });
+  } catch (err) {
+    console.error("Chyba při PUT požadavku:", err);
+  }
 }
