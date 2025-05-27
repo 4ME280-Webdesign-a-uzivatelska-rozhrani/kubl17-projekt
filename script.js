@@ -79,38 +79,51 @@ function zobrazTop3(hryData) {
 
   if (hryData.length === 0) return;
 
-  const topLibi = [...hryData].sort((a, b) => b.libi - a.libi)[0];
-  const topZahrano = [...hryData].sort((a, b) => a.zahrano - b.zahrano)[0];
-
-  // Pomocná funkce pro výběr náhodné hry unikátní vůči danému seznamu
-  function vyberNahodnouUnikatni(existingHry) {
-    if (hryData.length === 0) return null;
-    const maxPokusy = 20;
-    let pokusy = 0;
-    while (pokusy < maxPokusy) {
-      const nahodna = hryData[Math.floor(Math.random() * hryData.length)];
-      if (!existingHry.some(h => h.nazev === nahodna.nazev)) {
-        return nahodna;
-      }
-      pokusy++;
-    }
-    // Pokud nenajde unikátní, vrátí null
-    return null;
+  // Pokud máš méně než 3 hry, zobraz všechny a skonči
+  if (hryData.length <= 3) {
+    hryData.forEach((hra, i) => {
+      pridatTopHru(hra, i);
+    });
+    return;
   }
 
+  // Najdeme topLibi - hru s nejvíce "libi"
+  const topLibi = [...hryData].sort((a, b) => b.libi - a.libi)[0];
+
+  // Najdeme topZahrano - hru s nejvíce "zahrano" (zopakoval jsem podle smyslu, dříve bylo naopak)
+  const topZahrano = [...hryData].sort((a, b) => b.zahrano - a.zahrano)[0];
+
+  // Vytvoříme pole pro unikátní top hry
   let top3Unikatni = [];
+
+  // Přidáme topLibi
   if (topLibi) top3Unikatni.push(topLibi);
+
+  // Přidáme topZahrano pokud není duplicitní
   if (topZahrano && !top3Unikatni.some(h => h.nazev === topZahrano.nazev)) {
     top3Unikatni.push(topZahrano);
   }
 
-  const nahodna = vyberNahodnouUnikatni(top3Unikatni);
-  if (nahodna) top3Unikatni.push(nahodna);
+  // Vybereme náhodnou hru z filtrovaných, která není v top3Unikatni
+  const zbyleHry = hryData.filter(h => !top3Unikatni.some(th => th.nazev === h.nazev));
+  let nahodna = null;
+  if (zbyleHry.length > 0) {
+    nahodna = zbyleHry[Math.floor(Math.random() * zbyleHry.length)];
+    top3Unikatni.push(nahodna);
+  } else {
+    // Pokud není žádná hra mimo topLibi a topZahrano, může být náhodná jedna z nich (opět jen pro 3 prvky)
+    // Nebo prostě top3 budou jen dvě hry
+  }
 
+  // Labely a CSS třídy - podle počtu her dynamicky
   const labels = ["TOP favorit", "Zahraj si mě prosím", "Náhodná výzva"];
   const cssTridy = ["top-favorit", "top-zahraj", "top-nahodna"];
 
   top3Unikatni.forEach((hra, i) => {
+    pridatTopHru(hra, i);
+  });
+
+  function pridatTopHru(hra, i) {
     const div = document.createElement("div");
     const trida = cssTridy[i % cssTridy.length];
     div.className = `top-hra ${trida}`;
@@ -125,7 +138,7 @@ function zobrazTop3(hryData) {
       <button onclick="oznacZahrano(${getHraIndex(hra)})">✅ Zahrané</button>
     `;
     top3Container.appendChild(div);
-  });
+  }
 }
 
 
