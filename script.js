@@ -1,17 +1,21 @@
 const API_URL = "https://kubl17-projekt.kubl17.workers.dev";
 let hry = [];
 
-// Načtení dat
+// Načti hry z JSONBin přes proxy
 async function nactiData() {
-  const res = await fetch(API_URL);
-  const data = await res.json();
-  hry = data.record.hry;
-  zobrazHry(hry);
-  zobrazTop3(hry);
+  try {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+    hry = data.record.hry || [];
+    zobrazHry(hry);
+    zobrazTop3(hry);
+  } catch (err) {
+    console.error("Chyba při načítání dat:", err);
+  }
 }
 nactiData();
 
-// Zobrazení her
+// Zobraz hry v seznamu
 function zobrazHry(seznam) {
   const ul = document.getElementById("seznam");
   ul.innerHTML = "";
@@ -29,7 +33,7 @@ function zobrazHry(seznam) {
   });
 }
 
-// Filtr
+// Filtrace podle formuláře
 function filtruj() {
   const typ = document.getElementById("typ").value;
   const hraci = parseInt(document.getElementById("hraci").value);
@@ -45,24 +49,28 @@ function filtruj() {
   zobrazTop3(filtrovane);
 }
 
-// Hodnocení
-function ohodnot(index, typ) {
-  hry[index][typ]++;
+// Označení hry (líbí / nelíbí / zahráno)
+function ohodnot(index, typHodnoceni) {
+  hry[index][typHodnoceni]++;
   ulozData();
   zobrazHry(hry);
   zobrazTop3(hry);
 }
 
-// Uložení do JSONBin
+// Uložení aktualizovaného JSONu do JSONBin přes proxy
 async function ulozData() {
-  await fetch(API_URL, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ hry })
-  });
+  try {
+    await fetch(API_URL, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ hry })
+    });
+  } catch (err) {
+    console.error("Chyba při ukládání dat:", err);
+  }
 }
 
-// Výběr doporučených her
+// Zobraz top 3 hry podle kritérií
 function zobrazTop3(seznam) {
   const ul = document.getElementById("top3");
   ul.innerHTML = "";
@@ -75,14 +83,13 @@ function zobrazTop3(seznam) {
 
   const vyber = [podleLibenosti, nejmeneZahrana, nahodna];
 
-  const nazvy = new Set(); // zamezí duplikaci v top3
-  for (let hra of vyber) {
+  const nazvy = new Set(); // zabrání duplicitám
+  vyber.forEach(hra => {
     if (!nazvy.has(hra.nazev)) {
       const li = document.createElement("li");
       li.innerHTML = `<strong>${hra.nazev}</strong> (${hra.typ}, ${hra.hraci} hráčů, ${hra.cas} min)`;
       ul.appendChild(li);
       nazvy.add(hra.nazev);
     }
-  }
+  });
 }
-
