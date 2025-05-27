@@ -1,6 +1,11 @@
 const API_URL = "https://kubl17-projekt.kubl17.workers.dev/";
 let hry = [];
-let aktualniFiltrovane = [];
+let posledniFiltry = {
+  typ: "vse",
+  hraciMin: null,
+  hraciMax: null,
+  casMax: null
+};
 
 document.addEventListener("DOMContentLoaded", async () => {
   await nactiData();
@@ -15,7 +20,6 @@ async function nactiData() {
     const res = await fetch(API_URL);
     const data = await res.json();
     hry = data.record.hry;
-    aktualniFiltrovane = [...hry];
   } catch (error) {
     console.error("Chyba při načítání dat:", error);
   }
@@ -26,7 +30,6 @@ function naplnTypyHerDropdown() {
   if (!selectTyp) return;
 
   const typy = [...new Set(hry.map(hra => hra.typ))].sort();
-
   selectTyp.innerHTML = '<option value="vse">Vše</option>';
 
   typy.forEach(typ => {
@@ -42,12 +45,10 @@ function zobrazHryBezTop3(hryData) {
   if (!seznam) return;
   seznam.innerHTML = "";
 
-  // Získej hry z top3, aby se neopakovaly
   const top3Hry = getTop3Hry(hryData);
-
   const hryKZobrazeni = hryData.filter(hra => !top3Hry.includes(hra));
 
-  hryKZobrazeni.forEach((hra, index) => {
+  hryKZobrazeni.forEach((hra) => {
     const hraDiv = document.createElement("div");
     hraDiv.className = "hra";
 
@@ -77,16 +78,10 @@ function zobrazTop3(hryData) {
 
   if (hryData.length === 0) return;
 
-  // 1. Nejčastěji označená jako oblíbená
-  const topLibi = [...hryData].sort((a,b) => b.libi - a.libi)[0];
-
-  // 2. Nejmeně zahraná (nejnižší zahrano)
-  const topZahrano = [...hryData].sort((a,b) => a.zahrano - b.zahrano)[0];
-
-  // 3. Náhodná
+  const topLibi = [...hryData].sort((a, b) => b.libi - a.libi)[0];
+  const topZahrano = [...hryData].sort((a, b) => a.zahrano - b.zahrano)[0];
   const nahodna = hryData[Math.floor(Math.random() * hryData.length)];
 
-  // Vyhneme se opakování v top3 (unikátní hry)
   let top3Unikatni = [];
   [topLibi, topZahrano, nahodna].forEach(hra => {
     if (!top3Unikatni.some(h => h.nazev === hra.nazev)) top3Unikatni.push(hra);
@@ -98,7 +93,7 @@ function zobrazTop3(hryData) {
   top3Unikatni.forEach((hra, i) => {
     const div = document.createElement("div");
     const trida = cssTridy[i % cssTridy.length];
-    div.className = `top-hra ${trida}`;  // Přidání barvy podle pořadí
+    div.className = `top-hra ${trida}`;
     div.innerHTML = `
       <h3>${hra.nazev} <span class="top-label">${labels[i]}</span></h3>
       <p>Typ: ${hra.typ}</p>
@@ -113,16 +108,13 @@ function zobrazTop3(hryData) {
   });
 }
 
-
-
 function getTop3Hry(hryData) {
   if (hryData.length === 0) return [];
 
-  const topLibi = [...hryData].sort((a,b) => b.libi - a.libi)[0];
-  const topZahrano = [...hryData].sort((a,b) => a.zahrano - b.zahrano)[0];
+  const topLibi = [...hryData].sort((a, b) => b.libi - a.libi)[0];
+  const topZahrano = [...hryData].sort((a, b) => a.zahrano - b.zahrano)[0];
   const nahodna = hryData[Math.floor(Math.random() * hryData.length)];
 
-  // Unikátní set
   let top3 = [];
   [topLibi, topZahrano, nahodna].forEach(hra => {
     if (!top3.includes(hra)) top3.push(hra);
@@ -137,37 +129,37 @@ function nastavFiltraci() {
   formular.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    const typ = document.getElementById("filtr-typ").value;
-    const hraciMin = parseInt(document.getElementById("filtr-hraci-min").value);
-    const hraciMax = parseInt(document.getElementById("filtr-hraci-max").value);
-    const casMax = parseInt(document.getElementById("filtr-cas-max").value);
+    posledniFiltry.typ = document.getElementById("filtr-typ").value;
+    posledniFiltry.hraciMin = parseInt(document.getElementById("filtr-hraci-min").value);
+    posledniFiltry.hraciMax = parseInt(document.getElementById("filtr-hraci-max").value);
+    posledniFiltry.casMax = parseInt(document.getElementById("filtr-cas-max").value);
 
-    // Ošetření nesmyslných filtrů (min > max)
-    if (!isNaN(hraciMin) && !isNaN(hraciMax) && hraciMin > hraciMax) {
+    if (!isNaN(posledniFiltry.hraciMin) && !isNaN(posledniFiltry.hraciMax) && posledniFiltry.hraciMin > posledniFiltry.hraciMax) {
       alert("Minimální počet hráčů nemůže být větší než maximální.");
       return;
     }
 
-    let filtrovane = [...hry];
-
-    if (typ && typ !== "vse") {
-      filtrovane = filtrovane.filter(hra => hra.typ === typ);
-    }
-    if (!isNaN(hraciMin)) {
-      filtrovane = filtrovane.filter(hra => hra.hraci_max >= hraciMin);
-    }
-    if (!isNaN(hraciMax)) {
-      filtrovane = filtrovane.filter(hra => hra.hraci_min <= hraciMax);
-    }
-    if (!isNaN(casMax)) {
-      filtrovane = filtrovane.filter(hra => hra.cas_max <= casMax);
-    }
-
-    aktualniFiltrovane = filtrovane;
-
-    zobrazTop3(filtrovane);
-    zobrazHryBezTop3(filtrovane);
+    obnovZobrazeni();
   });
+}
+
+function filtrujHry() {
+  let filtrovane = [...hry];
+
+  if (posledniFiltry.typ && posledniFiltry.typ !== "vse") {
+    filtrovane = filtrovane.filter(hra => hra.typ === posledniFiltry.typ);
+  }
+  if (!isNaN(posledniFiltry.hraciMin)) {
+    filtrovane = filtrovane.filter(hra => hra.hraci_max >= posledniFiltry.hraciMin);
+  }
+  if (!isNaN(posledniFiltry.hraciMax)) {
+    filtrovane = filtrovane.filter(hra => hra.hraci_min <= posledniFiltry.hraciMax);
+  }
+  if (!isNaN(posledniFiltry.casMax)) {
+    filtrovane = filtrovane.filter(hra => hra.cas_max <= posledniFiltry.casMax);
+  }
+
+  return filtrovane;
 }
 
 async function oznacLibi(index) {
@@ -192,8 +184,9 @@ async function oznacZahrano(index) {
 }
 
 function obnovZobrazeni() {
-  zobrazTop3(aktualniFiltrovane);
-  zobrazHryBezTop3(aktualniFiltrovane);
+  const filtrovane = filtrujHry();
+  zobrazTop3(filtrovane);
+  zobrazHryBezTop3(filtrovane);
 }
 
 async function ulozData() {
