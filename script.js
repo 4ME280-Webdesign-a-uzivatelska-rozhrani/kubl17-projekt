@@ -164,20 +164,21 @@ function zobrazHryBezTop3(hryData, top3) {
 async function oznacLibi(index) {
   hry[index].libi += 1;
   aktualizujZobrazeniHry(index);
-  ulozData();
+  ulozData(index, "libi");
 }
 
 async function oznacNelibi(index) {
   hry[index].nelibi += 1;
   aktualizujZobrazeniHry(index);
-  ulozData();
+  ulozData(index, "nelibi");
 }
 
 async function oznacZahrano(index) {
   hry[index].zahrano += 1;
   aktualizujZobrazeniHry(index);
-  ulozData();
+  ulozData(index, "zahrano");
 }
+
 
 function aktualizujZobrazeniHry(index) {
   const hra = hry[index];
@@ -196,12 +197,17 @@ function aktualizujZobrazeniHry(index) {
   });
 }
 
-async function ulozData() {
+async function ulozData(index, field) {
+  const hra = hry[index];
+
   try {
     await fetch(API_URL, {
-      method: "PUT",
+      method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ hry })
+      body: JSON.stringify({
+        nazev: hra.nazev,
+        field
+      }),
     });
   } catch (error) {
     console.error("Chyba při ukládání dat:", error);
